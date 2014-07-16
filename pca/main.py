@@ -9,6 +9,8 @@
 #   2. Para documentacion: PEP 257 - Docstring Conventions (http://legacy.python.org/dev/peps/pep-0257/)
 
 import os
+import math
+
 import numpy as np
 from sklearn.cross_validation import train_test_split
 from sklearn.decomposition import PCA
@@ -21,6 +23,7 @@ def db_path():
     """Retorna el path de las base de datos"""
     pathfile = os.path.dirname(os.path.abspath(__file__))
     return os.path.join(pathfile, "db")
+
 
 def pca_lda(x_train, x_test, y_train, components):
     # Construir subespacio PCA con el valor optimo obtenido.
@@ -78,13 +81,13 @@ def graph_information(lda_train):
     #pylab.bar(left=bins[:-1], height=prob_positive, width=0.1, bottom=None, hold=None, color='red', alpha=0.5)
     #pylab.bar(left=bins[:-1], height=prob_negative, width=0.1, bottom=None, hold=None, color='blue', alpha=0.5)
     # add a 'best fit' line
-    mu = np.mean(lda_data_positive)
-    sigma = np.std(lda_data_positive)
-    y_positive = pylab.mlab.normpdf(bins, mu, sigma)
+    mu_positive = np.mean(lda_data_positive)
+    sigma_positive = np.std(lda_data_positive)
+    y_positive = pylab.mlab.normpdf(bins, mu_positive, sigma_positive)
     #Otra normal...
-    mu = np.mean(lda_data_negative)
-    sigma = np.std(lda_data_negative)
-    y_negative = pylab.mlab.normpdf(bins, mu, sigma)
+    mu_negative = np.mean(lda_data_negative)
+    sigma_negative = np.std(lda_data_negative)
+    y_negative = pylab.mlab.normpdf(bins, mu_negative, sigma_negative)
     #Clases...
     pylab.plot(bins, y_positive, 'r--')
     pylab.plot(bins, y_negative, 'b--')
@@ -94,10 +97,54 @@ def graph_information(lda_train):
     pylab.show()
 
 
+def naive_bayes_train(lda_train, y_train):
+    #todo: Hacer esto en una clase. (Validar que el input no este vacio?)
+    # Formulas obtenidas de: http://www.cs.cmu.edu/~tom/mlbook/NBayesLogReg.pdf
+
+    n = len(lda_train)
+    # Se separan los elementos positivos de los negativos.
+    lda_data_positive = lda_train[y_train == 1]
+    lda_data_negative = lda_train[y_train == 0]
+
+    # Se estima la probabilidad a priori (p_negative se obtendria con el complemento)
+    p_positive = float(len(lda_data_positive)) / len(lda_train)
+
+    # Se estima la distribucion que siguen, se asume que es Gaussiana.
+    mu_positive = np.mean(lda_data_positive)
+    mu_negative = np.mean(lda_data_negative)
+    var_negative = 0
+    var_positive = 0
+    for i in xrange(0, len(lda_data_negative)):
+        var_negative += (lda_data_negative[i] - mu_negative) * (lda_data_negative[i] - mu_negative).T
+    for i in xrange(0, len(lda_data_positive)):
+        var_positive += (lda_data_positive[i] - mu_positive) * (lda_data_positive[i] - mu_positive).T
+    covar_matrix = (var_positive + var_negative) / (n - 2)
+    #print math.sqrt(covar_matrix)
+    #sigma_positive = np.std(lda_data_positive)
+    #sigma_negative = np.std(lda_data_negative)
+    #print sigma_positive, sigma_negative
+    # Cuando se pase a una clase estos serian mejor como atributos, y este seria el constructor...
+    return p_positive, mu_positive, mu_negative, covar_matrix
+
+
+def naive_bayes_classifier(lda_train, p_positive, mu_positive, mu_negative, variance):
+    #todo: Hacer esto en una clase. (Validar que el input no este vacio?)
+    n = len(lda_train)
+    y_predicted = [None] * n
+    delta_mu = mu_positive - mu_negative
+    sum_mu = mu_positive + mu_negative
+    for i in range(0, n):
+        lhs = lda_train[i].T * 1 / variance * delta_mu
+        rhs = 0.5 * sum_mu.T * 1 / variance * delta_mu - math.log(p_positive / (1 - p_positive))
+        criteria = int(lhs > rhs)
+        y_predicted[i] = criteria
+    return y_predicted
+
+
 if __name__ == "__main__":
     # Cargar los datos
     datos_diabetes_path = os.path.join(db_path(), "datos_diabetes.npz")
-    
+
     d = np.load(datos_diabetes_path)
     data = d['data']
     labels = d['labels']
@@ -114,13 +161,32 @@ if __name__ == "__main__":
     lda_train, lda_test = pca_lda(x_train, x_test, y_train, k_opt)
 
     # Se grafica la informacion.
-    graph_information(lda_train)
+    # graph_information(lda_train)
 
     # Clasificar Bayes
     gnb = GaussianNB()
     gnb.fit(lda_train, y_train)
     y_pred = gnb.predict(lda_test)
-
+    print("**************")
+    print("sklearn_Bayes:")
     print("Number of mislabeled points : %d" % (y_test != y_pred).sum())
     print("Accuracy: ", gnb.score(lda_test, y_test))
+    print("**************")
 
+    # Implementacion propia del clasificador.
+    p_positive, mu_positive, mu_negative, variance = naive_bayes_train(lda_train, y_train)
+    y_pred_FK = naive_bayes_classifier(lda_test, p_positive, mu_positive, mu_negative, variance)
+    print("FK_Bayes")
+    mislabeled_points = (y_test != y_pred_FK).sum()
+    print("Number of mislabeled points : %d" % mislabeled_points)
+    print("Accuracy: ", 1 - float(mislabeled_points) / len(lda_test))
+    print("**************")
+
+    # Esto es para verificar que las predicciones son iguales, deberia entregar una lista vacia.
+    print("...probando igualdad...")
+    prueba = lda_test[y_pred_FK != y_pred]
+    # Se verifica si la lista esta vacia.
+    if not prueba:
+        print "Son iguales los dos metodos!"
+    else:
+        print "No son iguales. :("
