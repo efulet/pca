@@ -1,12 +1,14 @@
-# -*- coding: utf-8 -*-
 """
-Created on Thu Jul 10 12:54:31 2014
-
-@author: jbekios
+@created_at 2014-07-15
+@author Exequiel Fuentes <efulet@gmail.com>
+@author Brian Keith <briankeithn@gmail.com>
 """
 
-__author__ = 'kinus'
+# Se recomienda seguir los siguientes estandares:
+#   1. Para codificacion: PEP 8 - Style Guide for Python Code (http://legacy.python.org/dev/peps/pep-0008/)
+#   2. Para documentacion: PEP 257 - Docstring Conventions (http://legacy.python.org/dev/peps/pep-0257/)
 
+import os
 import numpy as np
 from sklearn.cross_validation import train_test_split
 from sklearn.decomposition import PCA
@@ -14,6 +16,11 @@ from sklearn.lda import LDA
 import pylab
 from sklearn.naive_bayes import GaussianNB
 
+
+def db_path():
+    """Retorna el path de las base de datos"""
+    pathfile = os.path.dirname(os.path.abspath(__file__))
+    return os.path.join(pathfile, "db")
 
 def pca_lda(x_train, x_test, y_train, components):
     # Construir subespacio PCA con el valor optimo obtenido.
@@ -89,7 +96,9 @@ def graph_information(lda_train):
 
 if __name__ == "__main__":
     # Cargar los datos
-    d = np.load('datos_diabetes.npz')
+    datos_diabetes_path = os.path.join(db_path(), "datos_diabetes.npz")
+    
+    d = np.load(datos_diabetes_path)
     data = d['data']
     labels = d['labels']
 
