@@ -82,27 +82,30 @@ if __name__ == "__main__":
         # Preparar los datos para validacion
         x_train, x_test, y_train, y_test = train_test_split(data, labels, test_size=0.3, random_state=0)
     
-        # Se encuentra la dimension optima de PCA.
+        # Se en-cuentra la dimension optima de PCA.
         k_opt = find_optimal_dimension(x_train, x_test, y_train, y_test, dimensions)
-    
+        print "Dimension Optima:", k_opt
         # Se entrena el clasificador PCA + LDA con la dimension optima.
         lda_train, lda_test = pca_lda(x_train, x_test, y_train, k_opt)
-    
-        # Se grafica la informacion.
-        graph = Graph(lda_train, y_train)
-        graph.frequencies_histogram()
-        graph.probability_density_functions()
     
         # Clasificar Bayes
         gnb = GaussianNB()
         gnb.fit(lda_train, y_train)
         y_pred = gnb.predict(lda_test)
+        y_prob = gnb.predict_proba(lda_test)
+        
+        # Se grafica la informacion.
+        graph = Graph(lda_train, y_train)
+        graph.frequencies_histogram()
+        graph.probability_density_functions()
+        graph.conditional_probability(lda_test, y_prob)
+        
         print("**************")
         print("sklearn_Bayes:")
         print("Number of mislabeled points : %d" % (y_test != y_pred).sum())
         print("Accuracy: ", gnb.score(lda_test, y_test))
         print("**************")
-    
+        
         # Implementacion propia del clasificador.
         fknb = FKNaiveBayesClassifier()
         fknb.fit(lda_train, y_train)

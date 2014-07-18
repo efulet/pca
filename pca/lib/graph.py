@@ -43,7 +43,7 @@ class Graph:
         pylab.figure()
         self._n, self._bins, self._patches = pylab.hist([self._data_positive, self._data_negative], 30, histtype='bar',
                                                         color=['red', 'blue'],
-                                                        label=['positivo', 'negativo'])
+                                                        label=['$\mathit{positivo}$', '$\mathit{negativo}$'])
         pylab.legend()
         pylab.xlabel('Caracteristicas LDA')
         pylab.ylabel('Frecuencia')
@@ -73,10 +73,30 @@ class Graph:
         sigma_negative = np.std(self._data_negative)
         y_negative = pylab.mlab.normpdf(self._bins, mu_negative, sigma_negative)
         #Clases...
-        pylab.plot(self._bins, y_positive, 'r--')
-        pylab.plot(self._bins, y_negative, 'b--')
+        pylab.plot(self._bins, y_positive, 'r--', label='$\mathcal{P}(LDA|D^+)$')
+        pylab.plot(self._bins, y_negative, 'b--', label='$\mathcal{P}(LDA|D^-)$')
         #Etiquetas...
-        pylab.xlabel('LDA')
+        pylab.xlabel('$LDA$')
         pylab.ylabel('$P(LDA|DIABETES)$')
+        pylab.legend()
+    
+    def conditional_probability(self, x, y):
+        """Este metodo .
+        """
+        #if self._bins is None:
+        #    raise GraphException("Debe calcular el histograma primero.")
+
+        # --- Probabilidades
+        pylab.figure()
+        
+        #Clases...
+        pylab.scatter(x, y[:,0], color='red', label='$\mathcal{P}(D^+|LDA)$')
+        pylab.scatter(x, y[:,1], color='blue', label='$\mathcal{P}(D^-|LDA)$')
+        
+        #Etiquetas...
+        pylab.xlabel('$LDA$')
+        pylab.ylabel('$P(DIABETES|LDA)$')
+        pylab.legend()
         pylab.show()
+    
 
