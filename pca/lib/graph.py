@@ -90,8 +90,8 @@ class Graph:
         pylab.figure()
         
         #Clases...
-        pylab.scatter(x, y[:,0], color='red', label='$\mathcal{P}(D^+|LDA)$')
-        pylab.scatter(x, y[:,1], color='blue', label='$\mathcal{P}(D^-|LDA)$')
+        pylab.scatter(x, y[:,0], color='blue', label='$\mathcal{P}(D^-|LDA)$')
+        pylab.scatter(x, y[:,1], color='red', label='$\mathcal{P}(D^+|LDA)$')
         
         #Etiquetas...
         pylab.xlabel('$LDA$')
