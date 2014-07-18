@@ -9,6 +9,8 @@
 #   2. Para documentacion: PEP 257 - Docstring Conventions (http://legacy.python.org/dev/peps/pep-0257/)
 
 import os
+import traceback
+import sys
 
 import numpy as np
 from sklearn.cross_validation import train_test_split
@@ -16,9 +18,12 @@ from sklearn.decomposition import PCA
 from sklearn.lda import LDA
 from sklearn.naive_bayes import GaussianNB
 
-from naive_bayes_classifier import FKNaiveBayesClassifier
-from graph import Graph
+from lib import *
 
+def check_version():
+    """Python v2.7 es requerida por el curso, entonces verificamos la version"""
+    if sys.version_info[:2] != (2, 7):
+        raise Exception("Parece que python v2.7 no esta instalado en el sistema")
 
 def db_path():
     """Retorna el path de las base de datos"""
@@ -61,55 +66,64 @@ def find_optimal_dimension(x_train, x_test, y_train, y_test, dimensions):
 
 
 if __name__ == "__main__":
-    # Cargar los datos
-    datos_diabetes_path = os.path.join(db_path(), "datos_diabetes.npz")
+    try:
+        # Verificar version de python
+        check_version()
+        
+        # Cargar los datos
+        datos_diabetes_path = os.path.join(db_path(), "datos_diabetes.npz")
+    
+        d = np.load(datos_diabetes_path)
+        data = d['data']
+        labels = d['labels']
+    
+        dimensions = data.shape[1]
+    
+        # Preparar los datos para validacion
+        x_train, x_test, y_train, y_test = train_test_split(data, labels, test_size=0.3, random_state=0)
+    
+        # Se encuentra la dimension optima de PCA.
+        k_opt = find_optimal_dimension(x_train, x_test, y_train, y_test, dimensions)
+    
+        # Se entrena el clasificador PCA + LDA con la dimension optima.
+        lda_train, lda_test = pca_lda(x_train, x_test, y_train, k_opt)
+    
+        # Se grafica la informacion.
+        graph = Graph(lda_train, y_train)
+        graph.frequencies_histogram()
+        graph.probability_density_functions()
+    
+        # Clasificar Bayes
+        gnb = GaussianNB()
+        gnb.fit(lda_train, y_train)
+        y_pred = gnb.predict(lda_test)
+        print("**************")
+        print("sklearn_Bayes:")
+        print("Number of mislabeled points : %d" % (y_test != y_pred).sum())
+        print("Accuracy: ", gnb.score(lda_test, y_test))
+        print("**************")
+    
+        # Implementacion propia del clasificador.
+        fknb = FKNaiveBayesClassifier()
+        fknb.fit(lda_train, y_train)
+        y_pred_FK = fknb.predict(lda_test)
+        #p_positive, mu_positive, mu_negative, variance = naive_bayes_train(lda_train, y_train)
+        #y_pred_FK = naive_bayes_classifier(lda_test, p_positive, mu_positive, mu_negative, variance)
+        print("FK_Bayes")
+        print("Number of mislabeled points : %d" % (y_test != y_pred_FK).sum())
+        print("Accuracy: ", fknb.score(lda_test, y_test))
+        print("**************")
+    
+        # Esto es para verificar que las predicciones son iguales, deberia entregar una lista vacia.
+        print("...probando igualdad...")
+        prueba = lda_test[y_pred_FK != y_pred]
+        # Se verifica si la lista esta vacia.
+        if not prueba:
+            print "Son iguales los dos metodos!"
+        else:
+            print "No son iguales. :("
+    except Exception, err:
+        print traceback.format_exc()
+    finally:
+        sys.exit()
 
-    d = np.load(datos_diabetes_path)
-    data = d['data']
-    labels = d['labels']
-
-    dimensions = data.shape[1]
-
-    # Preparar los datos para validacion
-    x_train, x_test, y_train, y_test = train_test_split(data, labels, test_size=0.3, random_state=0)
-
-    # Se encuentra la dimension optima de PCA.
-    k_opt = find_optimal_dimension(x_train, x_test, y_train, y_test, dimensions)
-
-    # Se entrena el clasificador PCA + LDA con la dimension optima.
-    lda_train, lda_test = pca_lda(x_train, x_test, y_train, k_opt)
-
-    # Se grafica la informacion.
-    graph = Graph(lda_train, y_train)
-    graph.frequencies_histogram()
-    graph.probability_density_functions()
-
-    # Clasificar Bayes
-    gnb = GaussianNB()
-    gnb.fit(lda_train, y_train)
-    y_pred = gnb.predict(lda_test)
-    print("**************")
-    print("sklearn_Bayes:")
-    print("Number of mislabeled points : %d" % (y_test != y_pred).sum())
-    print("Accuracy: ", gnb.score(lda_test, y_test))
-    print("**************")
-
-    # Implementacion propia del clasificador.
-    fknb = FKNaiveBayesClassifier()
-    fknb.fit(lda_train, y_train)
-    y_pred_FK = fknb.predict(lda_test)
-    #p_positive, mu_positive, mu_negative, variance = naive_bayes_train(lda_train, y_train)
-    #y_pred_FK = naive_bayes_classifier(lda_test, p_positive, mu_positive, mu_negative, variance)
-    print("FK_Bayes")
-    print("Number of mislabeled points : %d" % (y_test != y_pred_FK).sum())
-    print("Accuracy: ", fknb.score(lda_test, y_test))
-    print("**************")
-
-    # Esto es para verificar que las predicciones son iguales, deberia entregar una lista vacia.
-    print("...probando igualdad...")
-    prueba = lda_test[y_pred_FK != y_pred]
-    # Se verifica si la lista esta vacia.
-    if not prueba:
-        print "Son iguales los dos metodos!"
-    else:
-        print "No son iguales. :("

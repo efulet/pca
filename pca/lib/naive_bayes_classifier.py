@@ -125,3 +125,4 @@ class FKNaiveBayesClassifier(NaiveBayesClassifier):
 
         #Se retorna el valor calculado.
         return score
+
