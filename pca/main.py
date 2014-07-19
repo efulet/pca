@@ -20,6 +20,7 @@ from sklearn.naive_bayes import GaussianNB
 
 from lib import *
 
+
 def check_version():
     """Python v2.7 es requerida por el curso, entonces verificamos la version"""
     if sys.version_info[:2] != (2, 7):
@@ -116,10 +117,11 @@ if __name__ == "__main__":
         print("Number of mislabeled points : %d" % (y_test != y_pred_FK).sum())
         print("Accuracy: ", fknb.score(lda_test, y_test))
         print("**************")
-    
+
+        #print zip(y_pred, y_pred_FK)
         # Esto es para verificar que las predicciones son iguales, deberia entregar una lista vacia.
         print("...probando igualdad...")
-        prueba = lda_test[y_pred_FK != y_pred]
+        prueba = lda_test[[int(i) for i in y_pred] != y_pred]
         # Se verifica si la lista esta vacia.
         if not prueba:
             print "Son iguales los dos metodos!"
