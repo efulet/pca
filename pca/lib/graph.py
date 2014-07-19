@@ -30,10 +30,9 @@ class Graph:
         self._data = original_data
         self._data_positive = original_data[data_classes == 1]
         self._data_negative = original_data[data_classes == 0]
+        
         # Se inicializan en vacio las variables requeridas para el funcionamiento del grafico de probabilidades.
-        self._n = None
-        self._bins = None
-        self._patches = None
+        self._n, self._bins, self._patches = (None,)*3
 
     def frequencies_histogram(self):
         """Este metodo construye un histograma de frecuencias en base los datos cargados.
@@ -81,11 +80,8 @@ class Graph:
         pylab.legend()
     
     def conditional_probability(self, x, y):
-        """Este metodo .
+        """Este metodo construye el grafico de las funciones de probabilidad usando Bayes.
         """
-        #if self._bins is None:
-        #    raise GraphException("Debe calcular el histograma primero.")
-
         # --- Probabilidades
         pylab.figure()
         
@@ -97,6 +93,9 @@ class Graph:
         pylab.xlabel('$LDA$')
         pylab.ylabel('$P(DIABETES|LDA)$')
         pylab.legend()
-        pylab.show()
     
+    def show_graphs(self):
+        """Despliega los graficos
+        """
+        pylab.show()
 

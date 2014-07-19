@@ -12,6 +12,7 @@ Basado en el trabajo de Juan Bekios-Calfa <juan.bekios@ucn.cl>
 
 import numpy as np
 
+from naive_bayes_classifier_exception import NaiveBayesClassifierException
 
 class NaiveBayesClassifier:
     """Esta clase abstracta define los metodos que deben ser implementados por un

@@ -1,5 +1,5 @@
 """
-@created_at 2014-07-15
+@created_at 2014-07-19
 @author Exequiel Fuentes <efulet@gmail.com>
 @author Brian Keith <briankeithn@gmail.com>
 """
@@ -9,7 +9,16 @@
 #   2. Para documentacion: PEP 257 - Docstring Conventions (http://legacy.python.org/dev/peps/pep-0257/)
 
 
-from naive_bayes_classifier import FKNaiveBayesClassifier
-from graph import Graph
+class FKSkLearnException(Exception):
+    """FKSkLearnException maneja las excepciones para la clase FKSkLearn.
+    
+    Como usar esta clase:
+      raise FKSkLearnException("Arreglo fuera de los limites")
+    """
 
-from pca_lda import FKSkLearn
+    def __init__(self, value):
+        self.value = value
+
+    def __str__(self):
+        return repr(self.value)
+
