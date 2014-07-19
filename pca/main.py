@@ -95,13 +95,13 @@ if __name__ == "__main__":
         gnb = GaussianNB()
         gnb.fit(lda_train, y_train)
         y_pred = gnb.predict(lda_test)
-        y_prob = gnb.predict_proba(lda_test)
+        y_prob = gnb.predict_proba(lda_train)
 
         # Se grafica la informacion.
         graph = Graph(lda_train, y_train)
         graph.frequencies_histogram()
         graph.probability_density_functions()
-        #graph.conditional_probability(lda_test, y_prob)
+        graph.conditional_probability(lda_train, y_prob)
 
         print("**************")
         print("sklearn_Bayes:")
