@@ -1,0 +1,316 @@
+<?xml version="1.0" encoding="ascii"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>lib.pca_lda</title>
+  <link rel="stylesheet" href="epydoc.css" type="text/css" />
+  <script type="text/javascript" src="epydoc.js"></script>
+</head>
+
+<body bgcolor="white" text="black" link="blue" vlink="#204080"
+      alink="#204080">
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="lib-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Project homepage -->
+      <th class="navbar" align="right" width="100%">
+        <table border="0" cellpadding="0" cellspacing="0">
+          <tr><th class="navbar" align="center"
+            >PCA</th>
+          </tr></table></th>
+  </tr>
+</table>
+<table width="100%" cellpadding="0" cellspacing="0">
+  <tr valign="top">
+    <td width="100%">
+      <span class="breadcrumbs">
+        <a href="lib-module.html">Package&nbsp;lib</a> ::
+        Module&nbsp;pca_lda
+      </span>
+    </td>
+    <td>
+      <table cellpadding="0" cellspacing="0">
+        <!-- hide/show private -->
+        <tr><td align="right"><span class="options">[<a href="javascript:void(0);" class="privatelink"
+    onclick="toggle_private();">hide&nbsp;private</a>]</span></td></tr>
+        <tr><td align="right"><span class="options"
+            >[<a href="frames.html" target="_top">frames</a
+            >]&nbsp;|&nbsp;<a href="lib.pca_lda-pysrc.html"
+            target="_top">no&nbsp;frames</a>]</span></td></tr>
+      </table>
+    </td>
+  </tr>
+</table>
+<h1 class="epydoc">Source Code for <a href="lib.pca_lda-module.html">Module lib.pca_lda</a></h1>
+<pre class="py-src">
+<a name="L1"></a><tt class="py-lineno">  1</tt>  <tt class="py-line"><tt class="py-docstring">"""</tt> </tt>
+<a name="L2"></a><tt class="py-lineno">  2</tt>  <tt class="py-line"><tt class="py-docstring">@created_at 2014-07-19</tt> </tt>
+<a name="L3"></a><tt class="py-lineno">  3</tt>  <tt class="py-line"><tt class="py-docstring">@author Exequiel Fuentes &lt;efulet@gmail.com&gt;</tt> </tt>
+<a name="L4"></a><tt class="py-lineno">  4</tt>  <tt class="py-line"><tt class="py-docstring">@author Brian Keith &lt;briankeithn@gmail.com&gt;</tt> </tt>
+<a name="L5"></a><tt class="py-lineno">  5</tt>  <tt class="py-line"><tt class="py-docstring">"""</tt> </tt>
+<a name="L6"></a><tt class="py-lineno">  6</tt>  <tt class="py-line"> </tt>
+<a name="L7"></a><tt class="py-lineno">  7</tt>  <tt class="py-line"><tt class="py-comment"># Se recomienda seguir los siguientes estandares:</tt> </tt>
+<a name="L8"></a><tt class="py-lineno">  8</tt>  <tt class="py-line"><tt class="py-comment">#   1. Para codificacion: PEP 8 - Style Guide for Python Code (http://legacy.python.org/dev/peps/pep-0008/)</tt> </tt>
+<a name="L9"></a><tt class="py-lineno">  9</tt>  <tt class="py-line"><tt class="py-comment">#   2. Para documentacion: PEP 257 - Docstring Conventions (http://legacy.python.org/dev/peps/pep-0257/)</tt> </tt>
+<a name="L10"></a><tt class="py-lineno"> 10</tt>  <tt class="py-line"> </tt>
+<a name="L11"></a><tt class="py-lineno"> 11</tt>  <tt class="py-line"><tt class="py-keyword">import</tt> <tt class="py-name">numpy</tt> <tt class="py-keyword">as</tt> <tt class="py-name">np</tt> </tt>
+<a name="L12"></a><tt class="py-lineno"> 12</tt>  <tt class="py-line"> </tt>
+<a name="L13"></a><tt class="py-lineno"> 13</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt class="py-name">sklearn</tt><tt class="py-op">.</tt><tt class="py-name">cross_validation</tt> <tt class="py-keyword">import</tt> <tt class="py-name">train_test_split</tt> </tt>
+<a name="L14"></a><tt class="py-lineno"> 14</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt class="py-name">sklearn</tt><tt class="py-op">.</tt><tt class="py-name">decomposition</tt> <tt class="py-keyword">import</tt> <tt class="py-name">PCA</tt> </tt>
+<a name="L15"></a><tt class="py-lineno"> 15</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt class="py-name">sklearn</tt><tt class="py-op">.</tt><tt class="py-name">lda</tt> <tt class="py-keyword">import</tt> <tt class="py-name">LDA</tt> </tt>
+<a name="L16"></a><tt class="py-lineno"> 16</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt class="py-name">sklearn</tt><tt class="py-op">.</tt><tt class="py-name">naive_bayes</tt> <tt class="py-keyword">import</tt> <tt class="py-name">GaussianNB</tt> </tt>
+<a name="L17"></a><tt class="py-lineno"> 17</tt>  <tt class="py-line"> </tt>
+<a name="L18"></a><tt class="py-lineno"> 18</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt id="link-0" class="py-name" targets="Module lib.pca_lda_exception=lib.pca_lda_exception-module.html"><a title="lib.pca_lda_exception" class="py-name" href="#" onclick="return doclink('link-0', 'pca_lda_exception', 'link-0');">pca_lda_exception</a></tt> <tt class="py-keyword">import</tt> <tt id="link-1" class="py-name" targets="Class lib.pca_lda_exception.FKSkLearnException=lib.pca_lda_exception.FKSkLearnException-class.html"><a title="lib.pca_lda_exception.FKSkLearnException" class="py-name" href="#" onclick="return doclink('link-1', 'FKSkLearnException', 'link-1');">FKSkLearnException</a></tt> </tt>
+<a name="L19"></a><tt class="py-lineno"> 19</tt>  <tt class="py-line"> </tt>
+<a name="FKSkLearn"></a><div id="FKSkLearn-def"><a name="L20"></a><tt class="py-lineno"> 20</tt> <a class="py-toggle" href="#" id="FKSkLearn-toggle" onclick="return toggle('FKSkLearn');">-</a><tt class="py-line"><tt class="py-keyword">class</tt> <a class="py-def-name" href="lib.pca_lda.FKSkLearn-class.html">FKSkLearn</a><tt class="py-op">(</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="FKSkLearn-collapsed" style="display:none;" pad="+++" indent="++++"></div><div id="FKSkLearn-expanded"><a name="L21"></a><tt class="py-lineno"> 21</tt>  <tt class="py-line">    <tt class="py-docstring">"""Esta clase encapsula los metodos de la libreria sklearn para calcular </tt> </tt>
+<a name="L22"></a><tt class="py-lineno"> 22</tt>  <tt class="py-line"><tt class="py-docstring">    PCA+LDA.</tt> </tt>
+<a name="L23"></a><tt class="py-lineno"> 23</tt>  <tt class="py-line"><tt class="py-docstring">    """</tt> </tt>
+<a name="L24"></a><tt class="py-lineno"> 24</tt>  <tt class="py-line"> </tt>
+<a name="FKSkLearn.__init__"></a><div id="FKSkLearn.__init__-def"><a name="L25"></a><tt class="py-lineno"> 25</tt> <a class="py-toggle" href="#" id="FKSkLearn.__init__-toggle" onclick="return toggle('FKSkLearn.__init__');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="lib.pca_lda.FKSkLearn-class.html#__init__">__init__</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">db_path</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="FKSkLearn.__init__-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="FKSkLearn.__init__-expanded"><a name="L26"></a><tt class="py-lineno"> 26</tt>  <tt class="py-line">        <tt class="py-docstring">"""Crea una instancia de la clase PCA_LDA.</tt> </tt>
+<a name="L27"></a><tt class="py-lineno"> 27</tt>  <tt class="py-line"><tt class="py-docstring">        </tt> </tt>
+<a name="L28"></a><tt class="py-lineno"> 28</tt>  <tt class="py-line"><tt class="py-docstring">        :param db_path: La ruta a la base de datos.</tt> </tt>
+<a name="L29"></a><tt class="py-lineno"> 29</tt>  <tt class="py-line"><tt class="py-docstring">        """</tt> </tt>
+<a name="L30"></a><tt class="py-lineno"> 30</tt>  <tt class="py-line">        <tt class="py-name">d</tt> <tt class="py-op">=</tt> <tt class="py-name">np</tt><tt class="py-op">.</tt><tt class="py-name">load</tt><tt class="py-op">(</tt><tt id="link-2" class="py-name" targets="Method lib.util.Util.db_path()=lib.util.Util-class.html#db_path"><a title="lib.util.Util.db_path" class="py-name" href="#" onclick="return doclink('link-2', 'db_path', 'link-2');">db_path</a></tt><tt class="py-op">)</tt> </tt>
+<a name="L31"></a><tt class="py-lineno"> 31</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">data</tt> <tt class="py-op">=</tt> <tt class="py-name">d</tt><tt class="py-op">[</tt><tt class="py-string">'data'</tt><tt class="py-op">]</tt> </tt>
+<a name="L32"></a><tt class="py-lineno"> 32</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">labels</tt> <tt class="py-op">=</tt> <tt class="py-name">d</tt><tt class="py-op">[</tt><tt class="py-string">'labels'</tt><tt class="py-op">]</tt> </tt>
+<a name="L33"></a><tt class="py-lineno"> 33</tt>  <tt class="py-line">         </tt>
+<a name="L34"></a><tt class="py-lineno"> 34</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_dimensions</tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">data</tt><tt class="py-op">.</tt><tt class="py-name">shape</tt><tt class="py-op">[</tt><tt class="py-number">1</tt><tt class="py-op">]</tt> </tt>
+<a name="L35"></a><tt class="py-lineno"> 35</tt>  <tt class="py-line">         </tt>
+<a name="L36"></a><tt class="py-lineno"> 36</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_x_train</tt><tt class="py-op">,</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_x_test</tt><tt class="py-op">,</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_y_train</tt><tt class="py-op">,</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_y_test</tt> <tt class="py-op">=</tt> <tt class="py-op">(</tt><tt class="py-name">None</tt><tt class="py-op">,</tt><tt class="py-op">)</tt><tt class="py-op">*</tt><tt class="py-number">4</tt> </tt>
+<a name="L37"></a><tt class="py-lineno"> 37</tt>  <tt class="py-line">         </tt>
+<a name="L38"></a><tt class="py-lineno"> 38</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_lda_train</tt><tt class="py-op">,</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_lda_test</tt> <tt class="py-op">=</tt> <tt class="py-op">(</tt><tt class="py-name">None</tt><tt class="py-op">,</tt><tt class="py-op">)</tt><tt class="py-op">*</tt><tt class="py-number">2</tt> </tt>
+<a name="L39"></a><tt class="py-lineno"> 39</tt>  <tt class="py-line">         </tt>
+<a name="L40"></a><tt class="py-lineno"> 40</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_y_pred</tt><tt class="py-op">,</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_y_prob</tt> <tt class="py-op">=</tt> <tt class="py-op">(</tt><tt class="py-name">None</tt><tt class="py-op">,</tt><tt class="py-op">)</tt><tt class="py-op">*</tt><tt class="py-number">2</tt> </tt>
+<a name="L41"></a><tt class="py-lineno"> 41</tt>  <tt class="py-line">         </tt>
+<a name="L42"></a><tt class="py-lineno"> 42</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_gnb</tt> <tt class="py-op">=</tt> <tt class="py-name">None</tt> </tt>
+<a name="L43"></a><tt class="py-lineno"> 43</tt>  <tt class="py-line">         </tt>
+<a name="L44"></a><tt class="py-lineno"> 44</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_test_size</tt> <tt class="py-op">=</tt> <tt class="py-number">0.3</tt> </tt>
+<a name="L45"></a><tt class="py-lineno"> 45</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_random_state</tt> <tt class="py-op">=</tt> <tt class="py-number">0</tt> </tt>
+</div><a name="L46"></a><tt class="py-lineno"> 46</tt>  <tt class="py-line">     </tt>
+<a name="FKSkLearn.fk_get_lda_train"></a><div id="FKSkLearn.fk_get_lda_train-def"><a name="L47"></a><tt class="py-lineno"> 47</tt> <a class="py-toggle" href="#" id="FKSkLearn.fk_get_lda_train-toggle" onclick="return toggle('FKSkLearn.fk_get_lda_train');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="lib.pca_lda.FKSkLearn-class.html#fk_get_lda_train">fk_get_lda_train</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="FKSkLearn.fk_get_lda_train-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="FKSkLearn.fk_get_lda_train-expanded"><a name="L48"></a><tt class="py-lineno"> 48</tt>  <tt class="py-line">        <tt class="py-docstring">"""Retorna lda_train</tt> </tt>
+<a name="L49"></a><tt class="py-lineno"> 49</tt>  <tt class="py-line"><tt class="py-docstring">        """</tt> </tt>
+<a name="L50"></a><tt class="py-lineno"> 50</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_lda_train</tt> </tt>
+</div><a name="L51"></a><tt class="py-lineno"> 51</tt>  <tt class="py-line">     </tt>
+<a name="FKSkLearn.fk_get_lda_test"></a><div id="FKSkLearn.fk_get_lda_test-def"><a name="L52"></a><tt class="py-lineno"> 52</tt> <a class="py-toggle" href="#" id="FKSkLearn.fk_get_lda_test-toggle" onclick="return toggle('FKSkLearn.fk_get_lda_test');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="lib.pca_lda.FKSkLearn-class.html#fk_get_lda_test">fk_get_lda_test</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="FKSkLearn.fk_get_lda_test-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="FKSkLearn.fk_get_lda_test-expanded"><a name="L53"></a><tt class="py-lineno"> 53</tt>  <tt class="py-line">        <tt class="py-docstring">"""Retorna lda_test</tt> </tt>
+<a name="L54"></a><tt class="py-lineno"> 54</tt>  <tt class="py-line"><tt class="py-docstring">        """</tt> </tt>
+<a name="L55"></a><tt class="py-lineno"> 55</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_lda_test</tt> </tt>
+</div><a name="L56"></a><tt class="py-lineno"> 56</tt>  <tt class="py-line">     </tt>
+<a name="FKSkLearn.fk_get_y_train"></a><div id="FKSkLearn.fk_get_y_train-def"><a name="L57"></a><tt class="py-lineno"> 57</tt> <a class="py-toggle" href="#" id="FKSkLearn.fk_get_y_train-toggle" onclick="return toggle('FKSkLearn.fk_get_y_train');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="lib.pca_lda.FKSkLearn-class.html#fk_get_y_train">fk_get_y_train</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="FKSkLearn.fk_get_y_train-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="FKSkLearn.fk_get_y_train-expanded"><a name="L58"></a><tt class="py-lineno"> 58</tt>  <tt class="py-line">        <tt class="py-docstring">"""Retorna y_train</tt> </tt>
+<a name="L59"></a><tt class="py-lineno"> 59</tt>  <tt class="py-line"><tt class="py-docstring">        """</tt> </tt>
+<a name="L60"></a><tt class="py-lineno"> 60</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_y_train</tt> </tt>
+</div><a name="L61"></a><tt class="py-lineno"> 61</tt>  <tt class="py-line">     </tt>
+<a name="FKSkLearn.fk_get_y_test"></a><div id="FKSkLearn.fk_get_y_test-def"><a name="L62"></a><tt class="py-lineno"> 62</tt> <a class="py-toggle" href="#" id="FKSkLearn.fk_get_y_test-toggle" onclick="return toggle('FKSkLearn.fk_get_y_test');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="lib.pca_lda.FKSkLearn-class.html#fk_get_y_test">fk_get_y_test</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="FKSkLearn.fk_get_y_test-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="FKSkLearn.fk_get_y_test-expanded"><a name="L63"></a><tt class="py-lineno"> 63</tt>  <tt class="py-line">        <tt class="py-docstring">"""Retorna y_test</tt> </tt>
+<a name="L64"></a><tt class="py-lineno"> 64</tt>  <tt class="py-line"><tt class="py-docstring">        """</tt> </tt>
+<a name="L65"></a><tt class="py-lineno"> 65</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_y_test</tt> </tt>
+</div><a name="L66"></a><tt class="py-lineno"> 66</tt>  <tt class="py-line">     </tt>
+<a name="FKSkLearn.fk_get_y_pred"></a><div id="FKSkLearn.fk_get_y_pred-def"><a name="L67"></a><tt class="py-lineno"> 67</tt> <a class="py-toggle" href="#" id="FKSkLearn.fk_get_y_pred-toggle" onclick="return toggle('FKSkLearn.fk_get_y_pred');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="lib.pca_lda.FKSkLearn-class.html#fk_get_y_pred">fk_get_y_pred</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="FKSkLearn.fk_get_y_pred-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="FKSkLearn.fk_get_y_pred-expanded"><a name="L68"></a><tt class="py-lineno"> 68</tt>  <tt class="py-line">        <tt class="py-docstring">"""Retorna y_pred</tt> </tt>
+<a name="L69"></a><tt class="py-lineno"> 69</tt>  <tt class="py-line"><tt class="py-docstring">        """</tt> </tt>
+<a name="L70"></a><tt class="py-lineno"> 70</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_y_pred</tt> </tt>
+</div><a name="L71"></a><tt class="py-lineno"> 71</tt>  <tt class="py-line">     </tt>
+<a name="FKSkLearn.fk_get_y_prob"></a><div id="FKSkLearn.fk_get_y_prob-def"><a name="L72"></a><tt class="py-lineno"> 72</tt> <a class="py-toggle" href="#" id="FKSkLearn.fk_get_y_prob-toggle" onclick="return toggle('FKSkLearn.fk_get_y_prob');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="lib.pca_lda.FKSkLearn-class.html#fk_get_y_prob">fk_get_y_prob</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="FKSkLearn.fk_get_y_prob-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="FKSkLearn.fk_get_y_prob-expanded"><a name="L73"></a><tt class="py-lineno"> 73</tt>  <tt class="py-line">        <tt class="py-docstring">"""Retorna y_prob</tt> </tt>
+<a name="L74"></a><tt class="py-lineno"> 74</tt>  <tt class="py-line"><tt class="py-docstring">        """</tt> </tt>
+<a name="L75"></a><tt class="py-lineno"> 75</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_y_prob</tt> </tt>
+</div><a name="L76"></a><tt class="py-lineno"> 76</tt>  <tt class="py-line">     </tt>
+<a name="FKSkLearn.fk_train_test_split"></a><div id="FKSkLearn.fk_train_test_split-def"><a name="L77"></a><tt class="py-lineno"> 77</tt> <a class="py-toggle" href="#" id="FKSkLearn.fk_train_test_split-toggle" onclick="return toggle('FKSkLearn.fk_train_test_split');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="lib.pca_lda.FKSkLearn-class.html#fk_train_test_split">fk_train_test_split</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="FKSkLearn.fk_train_test_split-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="FKSkLearn.fk_train_test_split-expanded"><a name="L78"></a><tt class="py-lineno"> 78</tt>  <tt class="py-line">        <tt class="py-docstring">"""Encapsula el metodo train_test_split</tt> </tt>
+<a name="L79"></a><tt class="py-lineno"> 79</tt>  <tt class="py-line"><tt class="py-docstring">        """</tt> </tt>
+<a name="L80"></a><tt class="py-lineno"> 80</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_x_train</tt><tt class="py-op">,</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_x_test</tt><tt class="py-op">,</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_y_train</tt><tt class="py-op">,</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_y_test</tt> <tt class="py-op">=</tt> <tt class="py-name">train_test_split</tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">data</tt><tt class="py-op">,</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">labels</tt><tt class="py-op">,</tt> <tt class="py-name">test_size</tt><tt class="py-op">=</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_test_size</tt><tt class="py-op">,</tt> <tt class="py-name">random_state</tt><tt class="py-op">=</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_random_state</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L81"></a><tt class="py-lineno"> 81</tt>  <tt class="py-line">     </tt>
+<a name="FKSkLearn.fk_pca_lda"></a><div id="FKSkLearn.fk_pca_lda-def"><a name="L82"></a><tt class="py-lineno"> 82</tt> <a class="py-toggle" href="#" id="FKSkLearn.fk_pca_lda-toggle" onclick="return toggle('FKSkLearn.fk_pca_lda');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="lib.pca_lda.FKSkLearn-class.html#fk_pca_lda">fk_pca_lda</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="FKSkLearn.fk_pca_lda-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="FKSkLearn.fk_pca_lda-expanded"><a name="L83"></a><tt class="py-lineno"> 83</tt>  <tt class="py-line">        <tt class="py-docstring">"""Construye el subespacio PCA y LDA encontrando la dimension optima de PCA</tt> </tt>
+<a name="L84"></a><tt class="py-lineno"> 84</tt>  <tt class="py-line"><tt class="py-docstring">        """</tt> </tt>
+<a name="L85"></a><tt class="py-lineno"> 85</tt>  <tt class="py-line">        <tt class="py-name">k_opt</tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-3" class="py-name" targets="Method lib.pca_lda.FKSkLearn._find_optimal_dimension()=lib.pca_lda.FKSkLearn-class.html#_find_optimal_dimension"><a title="lib.pca_lda.FKSkLearn._find_optimal_dimension" class="py-name" href="#" onclick="return doclink('link-3', '_find_optimal_dimension', 'link-3');">_find_optimal_dimension</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L86"></a><tt class="py-lineno"> 86</tt>  <tt class="py-line">        <tt class="py-keyword">print</tt> <tt class="py-string">"Dimension Optima:"</tt><tt class="py-op">,</tt> <tt class="py-name">k_opt</tt> </tt>
+<a name="L87"></a><tt class="py-lineno"> 87</tt>  <tt class="py-line">        <tt class="py-comment">#k_opt = 6</tt> </tt>
+<a name="L88"></a><tt class="py-lineno"> 88</tt>  <tt class="py-line">         </tt>
+<a name="L89"></a><tt class="py-lineno"> 89</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_lda_train</tt><tt class="py-op">,</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_lda_test</tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-4" class="py-name" targets="Method lib.pca_lda.FKSkLearn._pca_lda()=lib.pca_lda.FKSkLearn-class.html#_pca_lda"><a title="lib.pca_lda.FKSkLearn._pca_lda" class="py-name" href="#" onclick="return doclink('link-4', '_pca_lda', 'link-4');">_pca_lda</a></tt><tt class="py-op">(</tt><tt class="py-name">k_opt</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L90"></a><tt class="py-lineno"> 90</tt>  <tt class="py-line">     </tt>
+<a name="FKSkLearn.fk_bayes_classifier"></a><div id="FKSkLearn.fk_bayes_classifier-def"><a name="L91"></a><tt class="py-lineno"> 91</tt> <a class="py-toggle" href="#" id="FKSkLearn.fk_bayes_classifier-toggle" onclick="return toggle('FKSkLearn.fk_bayes_classifier');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="lib.pca_lda.FKSkLearn-class.html#fk_bayes_classifier">fk_bayes_classifier</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="FKSkLearn.fk_bayes_classifier-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="FKSkLearn.fk_bayes_classifier-expanded"><a name="L92"></a><tt class="py-lineno"> 92</tt>  <tt class="py-line">        <tt class="py-docstring">"""Contruye el clasificar Bayes</tt> </tt>
+<a name="L93"></a><tt class="py-lineno"> 93</tt>  <tt class="py-line"><tt class="py-docstring">        """</tt> </tt>
+<a name="L94"></a><tt class="py-lineno"> 94</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_lda_train</tt> <tt class="py-keyword">is</tt> <tt class="py-name">None</tt><tt class="py-op">:</tt> </tt>
+<a name="L95"></a><tt class="py-lineno"> 95</tt>  <tt class="py-line">            <tt class="py-keyword">raise</tt> <tt id="link-5" class="py-name"><a title="lib.pca_lda_exception.FKSkLearnException" class="py-name" href="#" onclick="return doclink('link-5', 'FKSkLearnException', 'link-1');">FKSkLearnException</a></tt><tt class="py-op">(</tt><tt class="py-string">"lda_train no fue calculada."</tt><tt class="py-op">)</tt> </tt>
+<a name="L96"></a><tt class="py-lineno"> 96</tt>  <tt class="py-line">         </tt>
+<a name="L97"></a><tt class="py-lineno"> 97</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_lda_test</tt> <tt class="py-keyword">is</tt> <tt class="py-name">None</tt><tt class="py-op">:</tt> </tt>
+<a name="L98"></a><tt class="py-lineno"> 98</tt>  <tt class="py-line">            <tt class="py-keyword">raise</tt> <tt id="link-6" class="py-name"><a title="lib.pca_lda_exception.FKSkLearnException" class="py-name" href="#" onclick="return doclink('link-6', 'FKSkLearnException', 'link-1');">FKSkLearnException</a></tt><tt class="py-op">(</tt><tt class="py-string">"lda_test no fue calculada."</tt><tt class="py-op">)</tt> </tt>
+<a name="L99"></a><tt class="py-lineno"> 99</tt>  <tt class="py-line">         </tt>
+<a name="L100"></a><tt class="py-lineno">100</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_y_train</tt> <tt class="py-keyword">is</tt> <tt class="py-name">None</tt><tt class="py-op">:</tt> </tt>
+<a name="L101"></a><tt class="py-lineno">101</tt>  <tt class="py-line">            <tt class="py-keyword">raise</tt> <tt id="link-7" class="py-name"><a title="lib.pca_lda_exception.FKSkLearnException" class="py-name" href="#" onclick="return doclink('link-7', 'FKSkLearnException', 'link-1');">FKSkLearnException</a></tt><tt class="py-op">(</tt><tt class="py-string">"y_train no fue calculada."</tt><tt class="py-op">)</tt> </tt>
+<a name="L102"></a><tt class="py-lineno">102</tt>  <tt class="py-line">         </tt>
+<a name="L103"></a><tt class="py-lineno">103</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_gnb</tt> <tt class="py-op">=</tt> <tt class="py-name">GaussianNB</tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L104"></a><tt class="py-lineno">104</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_gnb</tt><tt class="py-op">.</tt><tt id="link-8" class="py-name" targets="Method lib.naive_bayes_classifier.FKNaiveBayesClassifier.fit()=lib.naive_bayes_classifier.FKNaiveBayesClassifier-class.html#fit,Method lib.naive_bayes_classifier.NaiveBayesClassifier.fit()=lib.naive_bayes_classifier.NaiveBayesClassifier-class.html#fit"><a title="lib.naive_bayes_classifier.FKNaiveBayesClassifier.fit
+lib.naive_bayes_classifier.NaiveBayesClassifier.fit" class="py-name" href="#" onclick="return doclink('link-8', 'fit', 'link-8');">fit</a></tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_lda_train</tt><tt class="py-op">,</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_y_train</tt><tt class="py-op">)</tt> </tt>
+<a name="L105"></a><tt class="py-lineno">105</tt>  <tt class="py-line">         </tt>
+<a name="L106"></a><tt class="py-lineno">106</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_y_pred</tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_gnb</tt><tt class="py-op">.</tt><tt id="link-9" class="py-name" targets="Method lib.naive_bayes_classifier.FKNaiveBayesClassifier.predict()=lib.naive_bayes_classifier.FKNaiveBayesClassifier-class.html#predict,Method lib.naive_bayes_classifier.NaiveBayesClassifier.predict()=lib.naive_bayes_classifier.NaiveBayesClassifier-class.html#predict"><a title="lib.naive_bayes_classifier.FKNaiveBayesClassifier.predict
+lib.naive_bayes_classifier.NaiveBayesClassifier.predict" class="py-name" href="#" onclick="return doclink('link-9', 'predict', 'link-9');">predict</a></tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_lda_test</tt><tt class="py-op">)</tt> </tt>
+<a name="L107"></a><tt class="py-lineno">107</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_y_prob</tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_gnb</tt><tt class="py-op">.</tt><tt class="py-name">predict_proba</tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_lda_train</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L108"></a><tt class="py-lineno">108</tt>  <tt class="py-line">     </tt>
+<a name="FKSkLearn.fk_score"></a><div id="FKSkLearn.fk_score-def"><a name="L109"></a><tt class="py-lineno">109</tt> <a class="py-toggle" href="#" id="FKSkLearn.fk_score-toggle" onclick="return toggle('FKSkLearn.fk_score');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="lib.pca_lda.FKSkLearn-class.html#fk_score">fk_score</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="FKSkLearn.fk_score-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="FKSkLearn.fk_score-expanded"><a name="L110"></a><tt class="py-lineno">110</tt>  <tt class="py-line">        <tt class="py-docstring">"""Encapsula el metodo score</tt> </tt>
+<a name="L111"></a><tt class="py-lineno">111</tt>  <tt class="py-line"><tt class="py-docstring">        """</tt> </tt>
+<a name="L112"></a><tt class="py-lineno">112</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_gnb</tt> <tt class="py-keyword">is</tt> <tt class="py-name">None</tt><tt class="py-op">:</tt> </tt>
+<a name="L113"></a><tt class="py-lineno">113</tt>  <tt class="py-line">            <tt class="py-keyword">raise</tt> <tt id="link-10" class="py-name"><a title="lib.pca_lda_exception.FKSkLearnException" class="py-name" href="#" onclick="return doclink('link-10', 'FKSkLearnException', 'link-1');">FKSkLearnException</a></tt><tt class="py-op">(</tt><tt class="py-string">"Objecto GaussianNB es nulo."</tt><tt class="py-op">)</tt> </tt>
+<a name="L114"></a><tt class="py-lineno">114</tt>  <tt class="py-line">         </tt>
+<a name="L115"></a><tt class="py-lineno">115</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_lda_test</tt> <tt class="py-keyword">is</tt> <tt class="py-name">None</tt><tt class="py-op">:</tt> </tt>
+<a name="L116"></a><tt class="py-lineno">116</tt>  <tt class="py-line">            <tt class="py-keyword">raise</tt> <tt id="link-11" class="py-name"><a title="lib.pca_lda_exception.FKSkLearnException" class="py-name" href="#" onclick="return doclink('link-11', 'FKSkLearnException', 'link-1');">FKSkLearnException</a></tt><tt class="py-op">(</tt><tt class="py-string">"lda_test no fue calculada."</tt><tt class="py-op">)</tt> </tt>
+<a name="L117"></a><tt class="py-lineno">117</tt>  <tt class="py-line">         </tt>
+<a name="L118"></a><tt class="py-lineno">118</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_y_test</tt> <tt class="py-keyword">is</tt> <tt class="py-name">None</tt><tt class="py-op">:</tt> </tt>
+<a name="L119"></a><tt class="py-lineno">119</tt>  <tt class="py-line">            <tt class="py-keyword">raise</tt> <tt id="link-12" class="py-name"><a title="lib.pca_lda_exception.FKSkLearnException" class="py-name" href="#" onclick="return doclink('link-12', 'FKSkLearnException', 'link-1');">FKSkLearnException</a></tt><tt class="py-op">(</tt><tt class="py-string">"y_test no fue calculada."</tt><tt class="py-op">)</tt> </tt>
+<a name="L120"></a><tt class="py-lineno">120</tt>  <tt class="py-line">         </tt>
+<a name="L121"></a><tt class="py-lineno">121</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_gnb</tt><tt class="py-op">.</tt><tt id="link-13" class="py-name" targets="Method lib.naive_bayes_classifier.FKNaiveBayesClassifier.score()=lib.naive_bayes_classifier.FKNaiveBayesClassifier-class.html#score,Method lib.naive_bayes_classifier.NaiveBayesClassifier.score()=lib.naive_bayes_classifier.NaiveBayesClassifier-class.html#score"><a title="lib.naive_bayes_classifier.FKNaiveBayesClassifier.score
+lib.naive_bayes_classifier.NaiveBayesClassifier.score" class="py-name" href="#" onclick="return doclink('link-13', 'score', 'link-13');">score</a></tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_lda_test</tt><tt class="py-op">,</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_y_test</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L122"></a><tt class="py-lineno">122</tt>  <tt class="py-line">     </tt>
+<a name="FKSkLearn._pca_lda"></a><div id="FKSkLearn._pca_lda-def"><a name="L123"></a><tt class="py-lineno">123</tt> <a class="py-toggle" href="#" id="FKSkLearn._pca_lda-toggle" onclick="return toggle('FKSkLearn._pca_lda');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="lib.pca_lda.FKSkLearn-class.html#_pca_lda">_pca_lda</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">components</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="FKSkLearn._pca_lda-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="FKSkLearn._pca_lda-expanded"><a name="L124"></a><tt class="py-lineno">124</tt>  <tt class="py-line">        <tt class="py-docstring">"""Construye el subespacio PCA y LDA.</tt> </tt>
+<a name="L125"></a><tt class="py-lineno">125</tt>  <tt class="py-line"><tt class="py-docstring">        </tt> </tt>
+<a name="L126"></a><tt class="py-lineno">126</tt>  <tt class="py-line"><tt class="py-docstring">        :param components: Valor entero para calcular la dimension</tt> </tt>
+<a name="L127"></a><tt class="py-lineno">127</tt>  <tt class="py-line"><tt class="py-docstring">        """</tt> </tt>
+<a name="L128"></a><tt class="py-lineno">128</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">components</tt> <tt class="py-keyword">is</tt> <tt class="py-name">None</tt> <tt class="py-keyword">or</tt> <tt class="py-keyword">not</tt> <tt class="py-name">isinstance</tt><tt class="py-op">(</tt><tt class="py-name">components</tt><tt class="py-op">,</tt> <tt class="py-name">int</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+<a name="L129"></a><tt class="py-lineno">129</tt>  <tt class="py-line">            <tt class="py-keyword">raise</tt> <tt id="link-14" class="py-name"><a title="lib.pca_lda_exception.FKSkLearnException" class="py-name" href="#" onclick="return doclink('link-14', 'FKSkLearnException', 'link-1');">FKSkLearnException</a></tt><tt class="py-op">(</tt><tt class="py-string">"components no puede ser nulo o diferente de entero."</tt><tt class="py-op">)</tt> </tt>
+<a name="L130"></a><tt class="py-lineno">130</tt>  <tt class="py-line">         </tt>
+<a name="L131"></a><tt class="py-lineno">131</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_x_train</tt> <tt class="py-keyword">is</tt> <tt class="py-name">None</tt><tt class="py-op">:</tt> </tt>
+<a name="L132"></a><tt class="py-lineno">132</tt>  <tt class="py-line">            <tt class="py-keyword">raise</tt> <tt id="link-15" class="py-name"><a title="lib.pca_lda_exception.FKSkLearnException" class="py-name" href="#" onclick="return doclink('link-15', 'FKSkLearnException', 'link-1');">FKSkLearnException</a></tt><tt class="py-op">(</tt><tt class="py-string">"x_train no fue calculada."</tt><tt class="py-op">)</tt> </tt>
+<a name="L133"></a><tt class="py-lineno">133</tt>  <tt class="py-line">         </tt>
+<a name="L134"></a><tt class="py-lineno">134</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_x_test</tt> <tt class="py-keyword">is</tt> <tt class="py-name">None</tt><tt class="py-op">:</tt> </tt>
+<a name="L135"></a><tt class="py-lineno">135</tt>  <tt class="py-line">            <tt class="py-keyword">raise</tt> <tt id="link-16" class="py-name"><a title="lib.pca_lda_exception.FKSkLearnException" class="py-name" href="#" onclick="return doclink('link-16', 'FKSkLearnException', 'link-1');">FKSkLearnException</a></tt><tt class="py-op">(</tt><tt class="py-string">"x_test no fue calculada."</tt><tt class="py-op">)</tt> </tt>
+<a name="L136"></a><tt class="py-lineno">136</tt>  <tt class="py-line">         </tt>
+<a name="L137"></a><tt class="py-lineno">137</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_y_train</tt> <tt class="py-keyword">is</tt> <tt class="py-name">None</tt><tt class="py-op">:</tt> </tt>
+<a name="L138"></a><tt class="py-lineno">138</tt>  <tt class="py-line">            <tt class="py-keyword">raise</tt> <tt id="link-17" class="py-name"><a title="lib.pca_lda_exception.FKSkLearnException" class="py-name" href="#" onclick="return doclink('link-17', 'FKSkLearnException', 'link-1');">FKSkLearnException</a></tt><tt class="py-op">(</tt><tt class="py-string">"y_train no fue calculada."</tt><tt class="py-op">)</tt> </tt>
+<a name="L139"></a><tt class="py-lineno">139</tt>  <tt class="py-line">         </tt>
+<a name="L140"></a><tt class="py-lineno">140</tt>  <tt class="py-line">        <tt class="py-comment"># Construir subespacio PCA con el valor optimo obtenido.</tt> </tt>
+<a name="L141"></a><tt class="py-lineno">141</tt>  <tt class="py-line">        <tt class="py-name">pca</tt> <tt class="py-op">=</tt> <tt class="py-name">PCA</tt><tt class="py-op">(</tt><tt class="py-name">n_components</tt><tt class="py-op">=</tt><tt class="py-name">components</tt><tt class="py-op">)</tt> </tt>
+<a name="L142"></a><tt class="py-lineno">142</tt>  <tt class="py-line">         </tt>
+<a name="L143"></a><tt class="py-lineno">143</tt>  <tt class="py-line">        <tt class="py-comment"># --- Construyo PCA a partir del conjunto de entrenamiento</tt> </tt>
+<a name="L144"></a><tt class="py-lineno">144</tt>  <tt class="py-line">        <tt class="py-name">pca</tt><tt class="py-op">.</tt><tt id="link-18" class="py-name"><a title="lib.naive_bayes_classifier.FKNaiveBayesClassifier.fit
+lib.naive_bayes_classifier.NaiveBayesClassifier.fit" class="py-name" href="#" onclick="return doclink('link-18', 'fit', 'link-8');">fit</a></tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_x_train</tt><tt class="py-op">)</tt> </tt>
+<a name="L145"></a><tt class="py-lineno">145</tt>  <tt class="py-line">        <tt class="py-name">pca_train</tt> <tt class="py-op">=</tt> <tt class="py-name">pca</tt><tt class="py-op">.</tt><tt class="py-name">transform</tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_x_train</tt><tt class="py-op">)</tt> </tt>
+<a name="L146"></a><tt class="py-lineno">146</tt>  <tt class="py-line">         </tt>
+<a name="L147"></a><tt class="py-lineno">147</tt>  <tt class="py-line">        <tt class="py-comment"># --- Proyecto al subespacio PCA con los datos de prueba</tt> </tt>
+<a name="L148"></a><tt class="py-lineno">148</tt>  <tt class="py-line">        <tt class="py-name">pca_test</tt> <tt class="py-op">=</tt> <tt class="py-name">pca</tt><tt class="py-op">.</tt><tt class="py-name">transform</tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_x_test</tt><tt class="py-op">)</tt> </tt>
+<a name="L149"></a><tt class="py-lineno">149</tt>  <tt class="py-line">         </tt>
+<a name="L150"></a><tt class="py-lineno">150</tt>  <tt class="py-line">        <tt class="py-comment"># Construir el subespacio LDA</tt> </tt>
+<a name="L151"></a><tt class="py-lineno">151</tt>  <tt class="py-line">        <tt class="py-name">clf</tt> <tt class="py-op">=</tt> <tt class="py-name">LDA</tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L152"></a><tt class="py-lineno">152</tt>  <tt class="py-line">         </tt>
+<a name="L153"></a><tt class="py-lineno">153</tt>  <tt class="py-line">        <tt class="py-comment"># --- Construyo el subespacio LDA a partir del conjunto de entrenamiento proyectado PCA</tt> </tt>
+<a name="L154"></a><tt class="py-lineno">154</tt>  <tt class="py-line">        <tt class="py-name">clf</tt><tt class="py-op">.</tt><tt id="link-19" class="py-name"><a title="lib.naive_bayes_classifier.FKNaiveBayesClassifier.fit
+lib.naive_bayes_classifier.NaiveBayesClassifier.fit" class="py-name" href="#" onclick="return doclink('link-19', 'fit', 'link-8');">fit</a></tt><tt class="py-op">(</tt><tt class="py-name">pca_train</tt><tt class="py-op">,</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_y_train</tt><tt class="py-op">)</tt> </tt>
+<a name="L155"></a><tt class="py-lineno">155</tt>  <tt class="py-line">        <tt class="py-name">lda_train</tt> <tt class="py-op">=</tt> <tt class="py-name">clf</tt><tt class="py-op">.</tt><tt class="py-name">transform</tt><tt class="py-op">(</tt><tt class="py-name">pca_train</tt><tt class="py-op">)</tt> </tt>
+<a name="L156"></a><tt class="py-lineno">156</tt>  <tt class="py-line">         </tt>
+<a name="L157"></a><tt class="py-lineno">157</tt>  <tt class="py-line">        <tt class="py-comment"># --- Proyecto al subespacio LDA los datos de prueba proyectados del subespacio PCA</tt> </tt>
+<a name="L158"></a><tt class="py-lineno">158</tt>  <tt class="py-line">        <tt class="py-name">lda_test</tt> <tt class="py-op">=</tt> <tt class="py-name">clf</tt><tt class="py-op">.</tt><tt class="py-name">transform</tt><tt class="py-op">(</tt><tt class="py-name">pca_test</tt><tt class="py-op">)</tt> </tt>
+<a name="L159"></a><tt class="py-lineno">159</tt>  <tt class="py-line">         </tt>
+<a name="L160"></a><tt class="py-lineno">160</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt class="py-name">lda_train</tt><tt class="py-op">,</tt> <tt class="py-name">lda_test</tt> </tt>
+</div><a name="L161"></a><tt class="py-lineno">161</tt>  <tt class="py-line">     </tt>
+<a name="FKSkLearn._find_optimal_dimension"></a><div id="FKSkLearn._find_optimal_dimension-def"><a name="L162"></a><tt class="py-lineno">162</tt> <a class="py-toggle" href="#" id="FKSkLearn._find_optimal_dimension-toggle" onclick="return toggle('FKSkLearn._find_optimal_dimension');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="lib.pca_lda.FKSkLearn-class.html#_find_optimal_dimension">_find_optimal_dimension</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="FKSkLearn._find_optimal_dimension-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="FKSkLearn._find_optimal_dimension-expanded"><a name="L163"></a><tt class="py-lineno">163</tt>  <tt class="py-line">        <tt class="py-docstring">"""Encuentra la dimension optima. Basado en el algoritmo creado </tt> </tt>
+<a name="L164"></a><tt class="py-lineno">164</tt>  <tt class="py-line"><tt class="py-docstring">        por Juan Bekios-Calfa &lt;juan.bekios@ucn.cl&gt;</tt> </tt>
+<a name="L165"></a><tt class="py-lineno">165</tt>  <tt class="py-line"><tt class="py-docstring">        """</tt> </tt>
+<a name="L166"></a><tt class="py-lineno">166</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_y_train</tt> <tt class="py-keyword">is</tt> <tt class="py-name">None</tt><tt class="py-op">:</tt> </tt>
+<a name="L167"></a><tt class="py-lineno">167</tt>  <tt class="py-line">            <tt class="py-keyword">raise</tt> <tt id="link-20" class="py-name"><a title="lib.pca_lda_exception.FKSkLearnException" class="py-name" href="#" onclick="return doclink('link-20', 'FKSkLearnException', 'link-1');">FKSkLearnException</a></tt><tt class="py-op">(</tt><tt class="py-string">"y_train no fue calculada."</tt><tt class="py-op">)</tt> </tt>
+<a name="L168"></a><tt class="py-lineno">168</tt>  <tt class="py-line">         </tt>
+<a name="L169"></a><tt class="py-lineno">169</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_y_test</tt> <tt class="py-keyword">is</tt> <tt class="py-name">None</tt><tt class="py-op">:</tt> </tt>
+<a name="L170"></a><tt class="py-lineno">170</tt>  <tt class="py-line">            <tt class="py-keyword">raise</tt> <tt id="link-21" class="py-name"><a title="lib.pca_lda_exception.FKSkLearnException" class="py-name" href="#" onclick="return doclink('link-21', 'FKSkLearnException', 'link-1');">FKSkLearnException</a></tt><tt class="py-op">(</tt><tt class="py-string">"y_test no fue calculada."</tt><tt class="py-op">)</tt> </tt>
+<a name="L171"></a><tt class="py-lineno">171</tt>  <tt class="py-line">         </tt>
+<a name="L172"></a><tt class="py-lineno">172</tt>  <tt class="py-line">        <tt class="py-name">r</tt> <tt class="py-op">=</tt> <tt class="py-number">0</tt>  <tt class="py-comment"># Classification rate</tt> </tt>
+<a name="L173"></a><tt class="py-lineno">173</tt>  <tt class="py-line">        <tt class="py-name">k</tt> <tt class="py-op">=</tt> <tt class="py-number">1</tt>  <tt class="py-comment"># Number of components</tt> </tt>
+<a name="L174"></a><tt class="py-lineno">174</tt>  <tt class="py-line">         </tt>
+<a name="L175"></a><tt class="py-lineno">175</tt>  <tt class="py-line">        <tt class="py-keyword">for</tt> <tt class="py-name">n_components</tt> <tt class="py-keyword">in</tt> <tt class="py-name">xrange</tt><tt class="py-op">(</tt><tt class="py-number">1</tt><tt class="py-op">,</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_dimensions</tt> <tt class="py-op">+</tt> <tt class="py-number">1</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+<a name="L176"></a><tt class="py-lineno">176</tt>  <tt class="py-line">            <tt class="py-comment"># Entrenar PCA+LDA con la cantidad de componentes dada.</tt> </tt>
+<a name="L177"></a><tt class="py-lineno">177</tt>  <tt class="py-line">            <tt class="py-name">lda_train</tt><tt class="py-op">,</tt> <tt class="py-name">lda_test</tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-22" class="py-name"><a title="lib.pca_lda.FKSkLearn._pca_lda" class="py-name" href="#" onclick="return doclink('link-22', '_pca_lda', 'link-4');">_pca_lda</a></tt><tt class="py-op">(</tt><tt class="py-name">n_components</tt><tt class="py-op">)</tt> </tt>
+<a name="L178"></a><tt class="py-lineno">178</tt>  <tt class="py-line">             </tt>
+<a name="L179"></a><tt class="py-lineno">179</tt>  <tt class="py-line">            <tt class="py-comment"># Clasificar Bayes</tt> </tt>
+<a name="L180"></a><tt class="py-lineno">180</tt>  <tt class="py-line">            <tt class="py-name">gnb</tt> <tt class="py-op">=</tt> <tt class="py-name">GaussianNB</tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L181"></a><tt class="py-lineno">181</tt>  <tt class="py-line">            <tt class="py-name">gnb</tt><tt class="py-op">.</tt><tt id="link-23" class="py-name"><a title="lib.naive_bayes_classifier.FKNaiveBayesClassifier.fit
+lib.naive_bayes_classifier.NaiveBayesClassifier.fit" class="py-name" href="#" onclick="return doclink('link-23', 'fit', 'link-8');">fit</a></tt><tt class="py-op">(</tt><tt class="py-name">lda_train</tt><tt class="py-op">,</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_y_train</tt><tt class="py-op">)</tt> </tt>
+<a name="L182"></a><tt class="py-lineno">182</tt>  <tt class="py-line">            <tt class="py-name">r_i</tt> <tt class="py-op">=</tt> <tt class="py-name">gnb</tt><tt class="py-op">.</tt><tt id="link-24" class="py-name"><a title="lib.naive_bayes_classifier.FKNaiveBayesClassifier.score
+lib.naive_bayes_classifier.NaiveBayesClassifier.score" class="py-name" href="#" onclick="return doclink('link-24', 'score', 'link-13');">score</a></tt><tt class="py-op">(</tt><tt class="py-name">lda_test</tt><tt class="py-op">,</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_y_test</tt><tt class="py-op">)</tt> </tt>
+<a name="L183"></a><tt class="py-lineno">183</tt>  <tt class="py-line">             </tt>
+<a name="L184"></a><tt class="py-lineno">184</tt>  <tt class="py-line">            <tt class="py-keyword">if</tt> <tt class="py-name">r_i</tt> <tt class="py-op">&gt;</tt> <tt class="py-name">r</tt><tt class="py-op">:</tt> </tt>
+<a name="L185"></a><tt class="py-lineno">185</tt>  <tt class="py-line">                <tt class="py-name">r</tt> <tt class="py-op">=</tt> <tt class="py-name">r_i</tt> </tt>
+<a name="L186"></a><tt class="py-lineno">186</tt>  <tt class="py-line">                <tt class="py-name">k</tt> <tt class="py-op">=</tt> <tt class="py-name">n_components</tt> </tt>
+<a name="L187"></a><tt class="py-lineno">187</tt>  <tt class="py-line">         </tt>
+<a name="L188"></a><tt class="py-lineno">188</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt class="py-name">k</tt> </tt>
+</div></div><a name="L189"></a><tt class="py-lineno">189</tt>  <tt class="py-line"> </tt><script type="text/javascript">
+<!--
+expandto(location.href);
+// -->
+</script>
+</pre>
+<br />
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="lib-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Project homepage -->
+      <th class="navbar" align="right" width="100%">
+        <table border="0" cellpadding="0" cellspacing="0">
+          <tr><th class="navbar" align="center"
+            >PCA</th>
+          </tr></table></th>
+  </tr>
+</table>
+<table border="0" cellpadding="0" cellspacing="0" width="100%%">
+  <tr>
+    <td align="left" class="footer">
+    Generated by Epydoc 3.0.1 on Sat Jul 19 20:47:26 2014
+    </td>
+    <td align="right" class="footer">
+      <a target="mainFrame" href="http://epydoc.sourceforge.net"
+        >http://epydoc.sourceforge.net</a>
+    </td>
+  </tr>
+</table>
+
+<script type="text/javascript">
+  <!--
+  // Private objects are initially displayed (because if
+  // javascript is turned off then we want them to be
+  // visible); but by default, we want to hide them.  So hide
+  // them unless we have a cookie that says to show them.
+  checkCookie();
+  // -->
+</script>
+</body>
+</html>
