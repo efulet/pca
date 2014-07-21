@@ -121,9 +121,9 @@
 %----------------------------------------------------------------------------------------
 
 \section{Introducción}
-El objetivo del taller es construir un clasificador que permita diagnosticar la aparición de diabetes dentro de cinco años dados los ocho primeros atributos.  El clasificador debe ser implementado utilizando PCA, LDA y un clasificador Gaussiano basado en Naïve Bayes. Se pretende mostrar el funcionamiento de \textit{Principal Component Analysis} (PCA) y \textit{Linear Discriminant Analysis} (LDA) utilizando un clasificador de Naïve Bayes Gaussiano sobre el conjunto de datos destinado al diagnóstico de diabetes. Se usarán las implementaciones de la librería \textit{scikit-learn} para realizar las pruebas y además se desarrollará una versión personalizada del clasificador bayesiano en Python.
+El objetivo del taller es construir un clasificador que permita diagnosticar la aparición de diabetes dentro de cinco años dados ocho atributos de un paciente. El clasificador debe ser implementado utilizando PCA, LDA y un clasificador Gaussiano basado en Naïve Bayes. Se pretende mostrar el funcionamiento de \textit{Principal Component Analysis} (PCA) y \textit{Linear Discriminant Analysis} (LDA) y el clasificador de Naïve Bayes Gaussiano sobre el conjunto de datos destinado al diagnóstico de diabetes. Se usarán las implementaciones de la librería \textit{scikit-learn} para realizar las pruebas y además se desarrollará una versión personalizada del clasificador bayesiano en Python.
 
-Los métodos presentados aquí son técnicas lineales utilizadas ampliamente en el área de aprendizaje automático. PCA es una técnica de reducción de dimensionalidad que tiene por objetivo resumir los datos en sus dimensiones más importantes de forma que se retenga la mayor cantidad de información. LDA es una técnica que entrega una proyección de los datos sobre un subespacio vectorial, permite determinar la clase a la que pertenece un ejemplo. Naïve Bayes es una técnica probabilística que se utiliza para clasificar ejemplos bajo la suposición de independencia condicional.
+Los métodos presentados aquí son técnicas lineales utilizadas ampliamente en el área de aprendizaje automático. PCA es una técnica de reducción de dimensionalidad que tiene por objetivo resumir los datos en sus dimensiones más importantes de forma que se retenga la mayor cantidad de información. LDA es una técnica que entrega una proyección de los datos sobre un subespacio vectorial, de tal forma de facilitar la determinación la clase a la que pertenece un ejemplo. Naïve Bayes es una técnica probabilística que se utiliza para clasificar ejemplos bajo la suposición de independencia condicional.
 
 En particular, se presenta un clasificador que utiliza PCA para reducir la dimensionalidad de los datos, luego aplica LDA para determinar el subespacio discriminante y finalmente se usa Naïve Bayes asumiendo que los datos siguen una distribución normal para clasificar los ejemplos.
 
@@ -161,7 +161,7 @@ El conjunto de datos utilizado corresponde a una muestra de 768 pacientes. Se im
 \caption{Detalle de los atributos expuestos en los datos.}
 \end{table}
 
-Se muestra la distribución de cada clase dentro de la muestra, la clase 0 corresponde a los individuos sanos (sin diabetes) y la clae 1 corresponde a los individuos que presentaron diabetes dentro de 5 años de los examenes realizados.
+Se muestra la distribución de cada clase dentro de la muestra, la clase 0 corresponde a los individuos sanos (sin diabetes) y la clase 1 corresponde a los individuos que presentaron diabetes dentro de 5 años de los exámenes realizados.
 
 \begin{table}[H]
 \centering
@@ -171,7 +171,7 @@ Se muestra la distribución de cada clase dentro de la muestra, la clase 0 corre
 0 (Negativo)   & 500                             \\ \hline
 1 (Positivo)   & 268                             \\ \hline
 \end{tabular}
-\caption{Distriución por Clase}
+\caption{Distribución por Clase}
 \end{table}
 
 Estos datos serán separados en una proporción del 70\% para entrenamiento y de 30\% para validación. 
@@ -187,11 +187,11 @@ Estos datos serán separados en una proporción del 70\% para entrenamiento y de
 \subsection{Principal Component Analysis}
 En esta sección se explican los fundamentos teóricos de PCA, no se ha implementado manualmente este método, en cambio solamente se ha usado la implementación de la librería \textit{scikit-learn}.
 
-El objetivo es reducir la dimensionalidad a costa de una pequeña pérdida de información. En principio esto se realiza a través de una rotación, es decir, un cambio de coordenadas. Esta rotación se hace de tal manera que los nuevos ejes se alinean con las direcciones que presenta la mayor variabilidad.
+El objetivo es reducir la dimensionalidad a costa de una pequeña pérdida de información. En principio esto se realiza a través de una rotación, es decir, un cambio de coordenadas. Esta rotación se hace de tal manera que los nuevos ejes se alinean con las direcciones que presentan la mayor variabilidad.
 
-Esto se logra mediante la obtención de los autovalores y autovectores de la matriz de covarianzas de los datos. Es posible eliminar las dimensiones con menor variabilidad sin pérdida grande de información.
+Esto se logra mediante la obtención de los autovalores y autovectores de la matriz de covarianzas de los datos. Es posible eliminar las dimensiones con menor variabilidad sin una gran pérdida de información.
 
-El algoritmo para aplicar PCA a una matriz $X$ de dimensiones $N \times d$ en una matriz $N \times m$ es el siguiente:
+El algoritmo para aplicar PCA a una matriz $X$ de dimensiones $N \times d$ y obtener una matriz de $N \times m$ es el siguiente:
 \begin{enumerate}
 \item Centralizar los datos (substraer la media).
 \item Calcular la matriz de covarianzas $d \times d$ de los datos, mediante la siguiente fórmula:
@@ -239,13 +239,13 @@ El modelo utilizado por el clasificador corresponde a la siguiente probabilidad 
 P(C|A_1,A_2,...,A_n)
 \end{equation}
 
-Donde $C$ es la variable de clase dependiente y los $A_i$ son los diferentes atributos predictores. Usando el teorema de Bayes se puede obtener que 
+Donde $C$ es la variable de clase dependiente y los $A_i$ son los diferentes atributos predictores. Usando el teorema de Bayes se puede obtener que: 
 
-\begin{equation}
+\begin{equation} \label{equation:CondProbability}
 P(C|A_1,A_2,...,A_n) = \frac{P(C)\cdot P(A_1,A_2,...,A_n|C)}{P(A_1,A_2,...,A_n)}
 \end{equation}
 
-El objetivo del clasificador es determinar, del conjunto de posibles valores que puede tomar $C$, cuál es el más probable. Para simplificar los cálculos se debe notar que el denominador permanece constante independiente del valor de $C$. Por lo tanto, basta encontrar el valor de C que maximiza la siguiente probabilidad:
+El objetivo del clasificador es determinar, del conjunto de posibles valores que puede tomar $C$, cuál es el más probable. Para simplificar los cálculos se debe notar que el denominador permanece constante independiente del valor de $C$. Por lo tanto, basta encontrar el valor de $C$ que maximiza la siguiente probabilidad:
 
 \begin{equation}
 P(C)\cdot P(A_1,A_2,...,A_n|C)
@@ -257,20 +257,19 @@ Mediante el uso de la definición de probabilidad condicional y la suposición d
 P(C)\cdot P(A_1|C)\cdot P(A_2|C) \cdot...\cdot P(A_n|C)
 \end{equation}
 
-Encontrar la clase C que maximiza esta expresión corresponde a maximizar la expresión de la ecuación (3) y por lo tanto es equivalente a encontrar la clase más probable dada la información que se tiene.
+Encontrar la clase $C$ que maximiza esta expresión corresponde a maximizar la expresión de la ecuación~(\ref{equation:CondProbability}) y por lo tanto es equivalente a encontrar la clase más probable dada la información que se tiene.
 La función clasificadora de Naïve Bayes se puede entonces expresar de la siguiente forma:
 
-\begin{equation}
+\begin{equation} \label{equation:NaiveBayes}
 classify(a_1,...,a_n) = argmax_{c}\left[P(C = c)\cdot \prod\limits_{i=1}^n P(A_i = a_i|C = c))\right]
 \end{equation}
-
 
 Los valores de cada probabilidad condicional $P(A_i = a_i|C = c)$ corresponden a estimaciones basadas en los datos empíricos sobre los que se esté trabajando.
 
 	\subsubsection{Naïve Bayes Gaussiano}
 Utilizando los fundamentos explicados en la sección anterior se puede construir un clasificador que utilice como base datos que siguen una distribución Gaussiana. Las fórmulas expuestas en esta sección se utilizan para la construcción del clasificador bayesiano solicitado.
 
-En base a la última ecuación de la sección anterior se pueden reemplazar los valores discretos de probabilidad por una función de densidad de probabilidad, obteniéndose el siguiente clasificador:
+En base a la última ecuación (\ref{equation:NaiveBayes}) de la sección anterior se pueden reemplazar los valores discretos de probabilidad por una función de densidad de probabilidad, obteniéndose el siguiente clasificador:
 
 \begin{equation}
 classify(a_1,...,a_n) = argmax_{c}\left[P(C = c)\cdot \prod\limits_{i=1}^n f(A_i = a_i|C = c)\right]
@@ -294,7 +293,6 @@ Esto se puede separar como sigue:
 classify(a_1,...,a_n) = argmax_{c}\left[ \ln{P(C = c)} + \sum\limits_{i=1}^n{\ln{f(A_i = a_i|C = c)}}\right]
 \end{equation}
 
-
 Para el caso en que existe un único input predictor ($n = 1$), se tendrá la siguiente fórmula simplificada:
 \begin{equation}
 classify(a) = argmax_{c}\left[ \ln{P(C = c)} + \ln{f(A = a|C = c)}\right]
@@ -305,7 +303,7 @@ Reemplazando la fórmula de la distribución normal se obtiene:
 classify(a) = argmax_{c}\left[ \ln{P(C = c)} -0.5\cdot \ln{(2 \pi \sigma_c^2)} - \frac{(x - \mu_c)^2}{2 \sigma_c ^2}  \right]
 \end{equation}
 
-Notar que se puede separar el logaritmo de 2 y al sumarse como constante podría despreciarse de la fórmula al maximizar, el clasififcador final sería:
+Notar que se puede separar el $\ln{2}$ y al sumarse como constante podría despreciarse de la fórmula al maximizar, el clasificador final sería:
 
 \begin{equation}
 classify(a) = argmax_{c}\left[ \ln{P(C = c)} -0.5\cdot \ln{(\pi \sigma_c^2)} - 0.5 \cdot \frac{(x - \mu_c)^2}{\sigma_c^2}  \right]
@@ -323,7 +321,7 @@ La varianza se estima mediante la siguiente fórmula para cada clase:
 \begin{equation}
 \sigma_c^2 = \frac{1}{N_c-1}\cdot \sum\limits_{c_i = c}{(x_i-\mu_c)^2}
 \end{equation}
-Esta fórmula indica que se debe obtener la varianza muestral considerando todos los elementos cuya clase es $c$. Notar que se divide por $N-1$ y no $N$ para que el estimador sea insesgado.
+Esta fórmula indica que se debe obtener la varianza muestral considerando todos los elementos cuya clase es $c$. Notar que se divide por $N_c-1$ y no $N_c$ para que el estimador sea insesgado.
 
 Finalmente, es necesario estimar las probabilidades de cada clase $P(C = c)$ esto se realiza mediante la siguiente fórmula:
 \begin{equation}
@@ -378,6 +376,7 @@ Este método obtiene la dimensión óptima para realizar PCA , para ello se prue
         pylab.xlabel('$LDA$')
         pylab.ylabel('$P(DIABETES|LDA)$')
         pylab.legend()
+        pylab.grid()
 \end{lstlisting}
 Este método grafica la probabilidad de tener o no diabetes (es decir, la probabilidad de pertenecer a una cierta clase) dado el valor de la proyección LDA. Utiliza el método \textit{scatter} de la librería \textit{pylab} para graficar los probabilidades de cada clase.
 
@@ -404,7 +403,7 @@ Este método grafica la probabilidad de tener o no diabetes (es decir, la probab
         self._p_negative = 1 - self._p_positive
 \end{lstlisting}
 
-Este método se encarga de ajustar los parámetros requeridos por el clasificador, primero se separan los datos entre las clases, luego una vez hecho esto se estiman las medias y varianzas de cada clase. Finalmente se estiman las probabilidades de cada clase, todo esto se almacenado en los atributos de la instancia del clasificador.\\
+Este método se encarga de ajustar los parámetros requeridos por el clasificador, primero se separan los datos entre las clases, luego una vez hecho esto se estiman las medias y varianzas de cada clase. Finalmente se estiman las probabilidades de cada clase, todo esto se ha almacenado en los atributos de la instancia del clasificador.\\
 
 \subsubsection{Predicción}
 \begin{lstlisting}
@@ -456,7 +455,7 @@ Este método se encarga de determinar la precisión del clasificador entrenado, 
 
 \section{Resultados Experimentales}
 \subsection{Resumen General}
-A continuación se muestran los resultados del clasificador bayesiano para el diagnóstico de diabetes. Notar que tanto la librería como la implementación propia corresponden en todos los casos, por lo que solo se muestran los resultados obtenidos con la librería.
+A continuación se muestran los resultados del clasificador bayesiano para el diagnóstico de diabetes. Notar que tanto los resultados de la librería como de la implementación propia corresponden en todos los casos, por lo que solo se muestran los resultados obtenidos con la librería.
 
 \begin{table}[H]
 \begin{center}
@@ -512,9 +511,9 @@ El desempeño óptimo ocurre cuando se utilizan 7 dimensiones para PCA, esto imp
     \end{minipage}
 \end{figure}
 
-Lógicamente el gráfico de la precisión es un reflejo de los puntos mal clasificados. Notar que el óptimo ocurre justamente cuando la dimensión de PCA es 7, solo una dimensión menos que el espacio original, esto implica que para este problema en específico PCA no aporta mucho al clasificador, notar que la cantidad de puntos mal clasificados solo se reduce en 1. Esto en general no se cumple, ya que en muchos casos el uso de PCA permite mejorar el rendimiento del clasificador al eliminar ruido de los datos y reducir la \textit{maldición de la dimensión}.
+Lógicamente el gráfico de la precisión es un reflejo de los puntos mal clasificados. Notar que el óptimo ocurre justamente cuando la dimensión de PCA es 7, solo una dimensión menos que el espacio original, esto implica que para este problema en específico PCA no aporta mucho al clasificador, notar que la cantidad de puntos mal clasificados sólo se reduce en 1. Esto en general no se cumple, ya que en muchos casos el uso de PCA permite mejorar el rendimiento del clasificador al eliminar ruido de los datos y reducir la \textit{maldición de la dimensión}.
 
-Se presenta en las siguientes páginas los resultados obtenidos para diferentes cantidades de componentes utilizadas en PCA. Se detallan los resultados más importantes, los gráficos sobrantes se han anexado en el Apéndice A.
+Se presenta en las siguientes páginas los resultados obtenidos para diferentes cantidades de componentes utilizadas en PCA. Se detallan los resultados más importantes, los gráficos sobrantes se han anexado en el Apéndice~\ref{appendix:GraficosRestantes}.
 
 \subsection{Resultados Detallados}
 \subsubsection{PCA+LDA 1-D}
@@ -627,15 +626,15 @@ Se ha mostrado además la clara diferencia que existe en la precisión entregada
 
 Se debe mencionar que si para PCA se utiliza una única dimensión el rendimiento del algoritmo es bajo respecto a los demás casos, esto debido a que si se hace una reducción solo sobre la primera componente principal se pierde mucha información contenida en otras dimensiones de los datos del problema. 
 
-Los datos utilizados para el desarrollo de este taller presentaron la particularidad que PCA no redujo mucho la cantidad de dimensiones, esto no ocurre en el caso general, donde el uso de PCA permite reducir en gran medida la dimensión de los datos al eliminar ruido e información redundante. En este caso la dimensión solo se redujo desde ocho a siete, un cambio no muy significativo y que solo aportó en una mejora de un ejemplo más clasificado correctamente. En otros casos el aporte de PCA puede ser significativo y permitir grandes mejoras del rendimiento, pues permite reducir la \textit{maldición de la dimensión} (como se pudo ver en el último control de lectura).
+Los datos utilizados para el desarrollo de este taller presentaron la particularidad que PCA no redujo mucho la cantidad de dimensiones, esto no ocurre en el caso general, donde el uso de PCA permite reducir en gran medida la dimensión de los datos al eliminar ruido e información redundante. En este caso la dimensión sólo se redujo desde ocho a siete, un cambio no muy significativo y además sólo aportó en aumentar la cantidad de ejemplo clasificado correctamente en uno. En otros casos el aporte de PCA puede ser significativo y permitir grandes mejoras del rendimiento, pues permite reducir la \textit{maldición de la dimensión} (como se pudo ver en el último control de lectura).
 
-Una propuesta interesante sería probar la implementación realizada con datos de otro problema de mayores dimensiones en función de observar si PCA produce un cambio significativo. También sería interesante generalizar el código implementado a problemas con más de dos clases, ya que la implementación actual del clasificador bayesiano propio solo admite problemas de clasificación binaria, a diferencia de la implementación de la librería \textit{scikit-learn} que admite problemas de clasificación $n$-arios.
+Una propuesta interesante sería probar la implementación realizada con datos de otro problema de mayores dimensiones en función de observar si PCA produce un cambio significativo. También sería interesante generalizar el código implementado a problemas con más de dos clases, ya que la implementación actual del clasificador bayesiano propio sólo admite problemas de clasificación binaria, a diferencia de la implementación de la librería \textit{scikit-learn} que admite problemas de clasificación $n$-arios.
 
 Sería interesante poder obtener cuáles son las dimensiones seleccionadas y cuáles son las dos primeras componentes principales, esto permitiría entregar una interpretación dentro del contexto del problema. Además, sería posible interpretar el criterio de clasificación en función de las variables definidas, sin embargo, las librerías de \textit{scikit-learn} no entregan una manera simple de obtener esta información, por lo tanto sería necesario diseñar e implementar los algoritmos PCA y LDA sólo para obtener estos datos, pero se ha considerado que esto está fuera del alcance del taller.
 
 El uso de la librería \textit{scikit-learn} en el desarrollo del taller facilitó bastante la implementación, ya que esta contenía todos los métodos requeridos ya implementados, lo que permitió simplemente realizar los llamados para aplicarlos. Lamentablemente la librería no se pudo hacer funcionar en Windows, por lo que para evitar problemas se realizó toda la implementación en un ambiente Linux.
 
-Por último, queda por mencionar los problemas encontrados durante el desarrollo del taller, a decir, la implementación propia del clasificador bayesiano, esto debido a que la bibliografía referenciada contenía diferentes métodos para determinar la clase a la que pertenecía una instancia de los datos. Si bien todos estos métodos son equivalentes, hubo problema con la implementación de las fórmulas debido a ciertas incongruencias encontradas en las fuentes, una vez se tuvo las fórmulas correctas para el clasificador, este funcionó de manera idéntica al clasificador de la librería \textit{scikit-learn}, confirmandose así que la implementación realizada es correcta.
+Por último, queda por mencionar los problemas encontrados durante el desarrollo del taller, a decir, la implementación propia del clasificador bayesiano, esto debido a que la bibliografía referenciada contenía diferentes métodos para determinar la clase a la que pertenecía una instancia de los datos. Si bien todos estos métodos son equivalentes, hubo problema con la implementación de las fórmulas debido a ciertas incongruencias encontradas en las fuentes, una vez se tuvo las fórmulas correctas para el clasificador, este funcionó de manera idéntica al clasificador de la librería \textit{scikit-learn}, confirmándose así que la implementación realizada es correcta.
 
 %----------------------------------------------------------------------------------------
 %	BIBLIOGRAPHY
