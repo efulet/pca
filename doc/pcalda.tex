@@ -17,7 +17,7 @@
 
 
 %----------------------------------------------------------------------------------------
-% PACKAGES AND DOCUMENT CONFIGURATIONS
+%	PACKAGES AND DOCUMENT CONFIGURATIONS
 %----------------------------------------------------------------------------------------
 
 \documentclass[letter, titlepage, 10pt]{article}
@@ -57,11 +57,11 @@
 % Metadata info
 \usepackage{ifpdf}
 \ifpdf
-  \pdfinfo{
-    /Author (Brian Keith;Exequiel Fuentes)
-    /Title (PCA-LDA - Diagnóstico Bayesiano de Diabetes)
-    /Keywords (PCA;LDA;NaiveBayes)
-  }
+	\pdfinfo{
+		/Author (Brian Keith;Exequiel Fuentes)
+		/Title (PCA+LDA - Diagnóstico Bayesiano de Diabetes)
+		/Keywords (PCA;LDA;NaiveBayes)
+	}
 \fi
 
 \setlength\parindent{0pt} % Removes all indentation from paragraphs
@@ -71,18 +71,18 @@
 %\usepackage{times} % Uncomment to use the Times New Roman font
 
 %----------------------------------------------------------------------------------------
-% DOCUMENT INFORMATION
+%	DOCUMENT INFORMATION
 %----------------------------------------------------------------------------------------
 
 \textheight=21cm
-\textwidth=16.5cm   
+\textwidth=16.5cm		
 \topmargin=-0.5cm
 \oddsidemargin=0cm
 \parindent=0mm
 
 
 %--------------------------------------------------------------------------
-\title{TALLER II \\ PCA-LDA \\ Diagnóstico Bayesiano de Diabetes} % Title
+\title{TALLER II \\ PCA+LDA \\ Diagnóstico Bayesiano de Diabetes} % Title
 \author{Brian Keith\\
   \small briankeithn@gmail.com\\
 \and
@@ -117,11 +117,11 @@
 % \end{abstract}
 
 %----------------------------------------------------------------------------------------
-% SECTION 1
+%	SECTION 1
 %----------------------------------------------------------------------------------------
 
 \section{Introducción}
-El objetivo del presente trabajo es mostrar el funcionamiento de \textit{Principal Component Analysis} (PCA) y \textit{Linear Discriminant Analysis} (LDA) utilizando un clasificador de Naïve Bayes Gaussiano sobre un conjunto de datos destinado al diagnóstico de diabetes. Se usarán las implementaciones de la librería \textit{scikit-learn} para realizar las pruebas y además se desarrollará una versión personalizada del clasificador bayesiano en Python.
+El objetivo del taller es construir un clasificador que permita diagnosticar la aparición de diabetes dentro de cinco años dados los ocho primeros atributos.  El clasificador debe ser implementado utilizando PCA, LDA y un clasificador Gaussiano basado en Naïve Bayes. Se pretende mostrar el funcionamiento de \textit{Principal Component Analysis} (PCA) y \textit{Linear Discriminant Analysis} (LDA) utilizando un clasificador de Naïve Bayes Gaussiano sobre el conjunto de datos destinado al diagnóstico de diabetes. Se usarán las implementaciones de la librería \textit{scikit-learn} para realizar las pruebas y además se desarrollará una versión personalizada del clasificador bayesiano en Python.
 
 Los métodos presentados aquí son técnicas lineales utilizadas ampliamente en el área de aprendizaje automático. PCA es una técnica de reducción de dimensionalidad que tiene por objetivo resumir los datos en sus dimensiones más importantes de forma que se retenga la mayor cantidad de información. LDA es una técnica que entrega una proyección de los datos sobre un subespacio vectorial, permite determinar la clase a la que pertenece un ejemplo. Naïve Bayes es una técnica probabilística que se utiliza para clasificar ejemplos bajo la suposición de independencia condicional.
 
@@ -138,9 +138,46 @@ Para facilitar la gestión, el seguimiento y el diagnóstico temprano de pacient
 
 Se propone construir un modelo matemático con la capacidad de predecir si un paciente tiene diabetes o no. Se cuenta con un conjunto de datos que será utilizado para la construcción y validación del modelo matemático.
 
+\newpage
+
+\subsection{Datos utilizados}
+El conjunto de datos utilizado corresponde a una muestra de 768 pacientes. Se impusieron varias restricciones en estas muestras obtenidas desde una base de datos más grande. Todos los pacientes en esta muestra son mujeres de al menos 21 años de herencia indígena Pima. La tabla resume la información contenida en los datos.
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|l|l|p{12cm}|}
+\hline
+\textbf{\#} & \textbf{Atributo} & \textbf{Descripción}                                                                                                    \\ \hline
+1           & Pregnant          & Cantidad de veces que la mujer ha estado embarazada.                                                                    \\ \hline
+2           & Plasma Glucose    & Concentración de glucosa en la sangre dos horas después de la prueba de tolerancia a la glucosa (mm Hg). \\ \hline
+3           & Diastolic BP      & Presión sanguínea diastólica.                                                                                           \\ \hline
+4           & Triceps SFT       & Espesor de la piel del tríceps (mm).                                                                            \\ \hline
+5           & Serum-Insulin     & Cantidad de insulina en dos horas (muU/ml).                                                                                   \\ \hline
+6           & BMI               & Índice de masa corporal (Kg / mm)                                                                       \\ \hline
+7           & DPF               & Antecedentes Familiares.                                                                                          \\ \hline
+8           & Age               & Edad del paciente (año).                                                                                                \\ \hline
+9           & Class             & Aparición de diabetes dentro de cinco años.                                                                             \\ \hline
+\end{tabular}
+\caption{Detalle de los atributos expuestos en los datos.}
+\end{table}
+
+Se muestra la distribución de cada clase dentro de la muestra, la clase 0 corresponde a los individuos sanos (sin diabetes) y la clae 1 corresponde a los individuos que presentaron diabetes dentro de 5 años de los examenes realizados.
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|c|c|}
+\hline
+\textbf{Clase} & \textbf{Cantidad de Instancias} \\ \hline
+0 (Negativo)   & 500                             \\ \hline
+1 (Positivo)   & 268                             \\ \hline
+\end{tabular}
+\caption{Distriución por Clase}
+\end{table}
+
+Estos datos serán separados en una proporción del 70\% para entrenamiento y de 30\% para validación. 
 
 %----------------------------------------------------------------------------------------
-% SECTION 2
+%	SECTION 2
 %----------------------------------------------------------------------------------------
 
 \newpage
@@ -187,9 +224,9 @@ Una vez encontrada esta base es posible realizar la proyección de los datos y o
 
 
 \subsection{Naïve Bayes}
-  \subsubsection{Naïve Bayes General}
-  En esta sección se explica el modelo básico de Naïve Bayes para clasificar dado un input discreto, luego, en base a lo expuesto se extenderá el método para input continuo.
-  La lógica subyacente al método de Naïve Bayes (NB) es una de las propiedades del álgebra de probabilidades, el llamado teorema de Bayes, que expresa lo siguiente. Dados dos eventos $A$ y $B$ se tiene que
+	\subsubsection{Naïve Bayes General}
+	En esta sección se explica el modelo básico de Naïve Bayes para clasificar dado un input discreto, luego, en base a lo expuesto se extenderá el método para input continuo.
+	La lógica subyacente al método de Naïve Bayes (NB) es una de las propiedades del álgebra de probabilidades, el llamado teorema de Bayes, que expresa lo siguiente. Dados dos eventos $A$ y $B$ se tiene que
 
 \begin{equation}
 P(A|B) = \frac{P(B|A)\cdot P(A)}{P(B)}
@@ -230,7 +267,7 @@ classify(a_1,...,a_n) = argmax_{c}\left[P(C = c)\cdot \prod\limits_{i=1}^n P(A_i
 
 Los valores de cada probabilidad condicional $P(A_i = a_i|C = c)$ corresponden a estimaciones basadas en los datos empíricos sobre los que se esté trabajando.
 
-  \subsubsection{Naïve Bayes Gaussiano}
+	\subsubsection{Naïve Bayes Gaussiano}
 Utilizando los fundamentos explicados en la sección anterior se puede construir un clasificador que utilice como base datos que siguen una distribución Gaussiana. Las fórmulas expuestas en esta sección se utilizan para la construcción del clasificador bayesiano solicitado.
 
 En base a la última ecuación de la sección anterior se pueden reemplazar los valores discretos de probabilidad por una función de densidad de probabilidad, obteniéndose el siguiente clasificador:
@@ -295,7 +332,7 @@ P(C = c) = \frac{N_c}{N}
 Donde $N$ correspondería al total de datos entre todas las clases.
 
 %----------------------------------------------------------------------------------------
-% SECTION 3
+%	SECTION 3
 %----------------------------------------------------------------------------------------
 
 \newpage
@@ -303,6 +340,7 @@ Donde $N$ correspondería al total de datos entre todas las clases.
 \section{Implementación}
 
 En esta sección se muestran las implementaciones en Python de todos los elementos que fueron agregados sobre el código inicial que se entregó en clases. No se muestran las refactorizaciones realizadas para mejorar el orden del código inicial, traspasándolo desde un código estructurado a una versión orientada a objetos. 
+
 
 \subsection{Dimensión Óptima}
 \begin{lstlisting}
@@ -322,7 +360,7 @@ def find_optimal_dimension(x_train, x_test, y_train, y_test, dimensions):
     return k
 \end{lstlisting}
 
-Este método obtiene la dimensión óptima para realizar PCA , para ello se prueba con la cantidad de componentes desde 1 hasta el máximo de dimensiones que poseen los datos (que viene dado por el parámetro de dimensiones). Se realiza PCA+LDA y luego se aplica el clasificador bayesiano de \textit{scikit-learn}. El algoritmo busca el clasificador que obtenga la mayor precisión de clasificación.
+Este método obtiene la dimensión óptima para realizar PCA , para ello se prueba con la cantidad de componentes desde 1 hasta el máximo de dimensiones que poseen los datos (que viene dado por el parámetro de dimensiones). Se realiza PCA+LDA y luego se aplica el clasificador bayesiano de \textit{scikit-learn}. El algoritmo busca el clasificador que obtenga la mayor precisión de clasificación.\\
 
 \subsection{Gráfico de Probabilidad Condicional}
 \begin{lstlisting} 
@@ -342,6 +380,8 @@ Este método obtiene la dimensión óptima para realizar PCA , para ello se prue
         pylab.legend()
 \end{lstlisting}
 Este método grafica la probabilidad de tener o no diabetes (es decir, la probabilidad de pertenecer a una cierta clase) dado el valor de la proyección LDA. Utiliza el método \textit{scatter} de la librería \textit{pylab} para graficar los probabilidades de cada clase.
+
+\newpage
 
 \subsection{Naïve Bayes}
 \subsubsection{Entrenamiento}
@@ -364,7 +404,7 @@ Este método grafica la probabilidad de tener o no diabetes (es decir, la probab
         self._p_negative = 1 - self._p_positive
 \end{lstlisting}
 
-Este método se encarga de ajustar los parámetros requeridos por el clasificador, primero se separan los datos entre las clases, luego una vez hecho esto se estiman las medias y varianzas de cada clase. Finalmente se estiman las probabilidades de cada clase, todo esto se almacenado en los atributos de la instancia del clasificador.
+Este método se encarga de ajustar los parámetros requeridos por el clasificador, primero se separan los datos entre las clases, luego una vez hecho esto se estiman las medias y varianzas de cada clase. Finalmente se estiman las probabilidades de cada clase, todo esto se almacenado en los atributos de la instancia del clasificador.\\
 
 \subsubsection{Predicción}
 \begin{lstlisting}
@@ -372,14 +412,14 @@ Este método se encarga de ajustar los parámetros requeridos por el clasificado
         # Se inicializan las variables requeridas por el clasificador.
         n = len(testing_set)
 
-        # Clase positiva...
+        # Se calcula la log-probabilidad de la clase positiva.
         log_p_positive = np.log(self._p_positive)
         pdf_positive = - 0.5 * np.sum(np.log(np.pi * self._var_positive))
         pdf_positive -= 0.5 * np.sum(((testing_set - self._mu_positive) ** 2) /
                                      self._var_positive, 1)
         positive_discriminant = log_p_positive + pdf_positive
 
-        # Clase negativa...
+        # Se calcula la la log-probabilidad de la clase negativa.
         log_p_negative = np.log(self._p_negative)
         pdf_negative = - 0.5 * np.sum(np.log(np.pi * self._var_negative))
         pdf_negative -= 0.5 * np.sum(((testing_set - self._mu_negative) ** 2) /
@@ -390,7 +430,10 @@ Este método se encarga de ajustar los parámetros requeridos por el clasificado
         return [int(i) for i in positive_discriminant > negative_discriminant]
 \end{lstlisting}
 
-Este método se encarga de determinar las clases a las que pertenece un conjunto de datos de prueba. Para ello se calcula la probabilidad logarítmica de que cada ejemplo pertenezca a la clase positiva y negativa. Luego se obtiene un vector que contiene el valor 1 en las posiciones donde la probabilidad logarítmica de la clase positiva es mayor que la probabilidad logarítmica de la clase negativa, y un 0 de otro modo. Este vector es el mismo que entrega la implementación de \textit{scikit-learn} del clasificador. Finalmente, se debe mencionar que se utiliza la probabilidad logarítmica pues es matemáticamente más simple de manejar y que las probabilidades vienen dadas por el uso de la distribución normal como es de esperarse de un clasificador Gaussiano.
+Este método se encarga de determinar las clases a las que pertenece un conjunto de datos de prueba. Para ello se calcula la probabilidad logarítmica de que cada ejemplo pertenezca a la clase positiva y negativa. Luego se obtiene un vector que contiene el valor 1 en las posiciones donde la probabilidad logarítmica de la clase positiva es mayor que la probabilidad logarítmica de la clase negativa, y un 0 de otro modo. Este vector es el mismo que entrega la implementación de \textit{scikit-learn} del clasificador. Finalmente, se debe mencionar que se utiliza la probabilidad logarítmica pues es matemáticamente más simple de manejar y que las probabilidades vienen dadas por el uso de la distribución normal como es de esperarse de un clasificador Gaussiano.\\
+
+
+\newpage
 
 \subsubsection{Evaluación}
 \begin{lstlisting}
@@ -405,15 +448,14 @@ Este método se encarga de determinar las clases a las que pertenece un conjunto
 
 \end{lstlisting}
 
-Este método se encarga de determinar la precisión del clasificador entrenado, para ello obtiene el vector de predicciones y lo compara con el vector real de clases. La precisión viene dada por la cantidad de aciertos sobre la cantidad total de datos probados, o alternativamente se puede calcular como el complemento de la razón de fallos, que corresponde a la forma en que se ha implementado.
+Este método se encarga de determinar la precisión del clasificador entrenado, para ello obtiene el vector de predicciones y lo compara con el vector real de clases. La precisión viene dada por la cantidad de aciertos sobre la cantidad total de datos probados, o alternativamente se puede calcular como el complemento de la razón de fallos, que corresponde a la forma en que se ha implementado.\\
 
 %----------------------------------------------------------------------------------------
-% SECTION 4
+%	SECTION 4
 %----------------------------------------------------------------------------------------
-
-\newpage
 
 \section{Resultados Experimentales}
+\subsection{Resumen General}
 A continuación se muestran los resultados del clasificador bayesiano para el diagnóstico de diabetes. Notar que tanto la librería como la implementación propia corresponden en todos los casos, por lo que solo se muestran los resultados obtenidos con la librería.
 
 \begin{table}[H]
@@ -456,8 +498,6 @@ Notar que siempre se intersectan alrededor de 0.5, en cambio notar que varía el
 
 El desempeño óptimo ocurre cuando se utilizan 7 dimensiones para PCA, esto implica una reducción de dimensionalidad de 1 respecto a las 8 dimensiones originales. Notar que el mayor cambio de rendimiento se produce al agregar la segunda dimensión en PCA. 
 
-\newpage
-
 \begin{figure}[H]
   \centering
     \begin{minipage}{.5\textwidth}
@@ -474,7 +514,10 @@ El desempeño óptimo ocurre cuando se utilizan 7 dimensiones para PCA, esto imp
 
 Lógicamente el gráfico de la precisión es un reflejo de los puntos mal clasificados. Notar que el óptimo ocurre justamente cuando la dimensión de PCA es 7, solo una dimensión menos que el espacio original, esto implica que para este problema en específico PCA no aporta mucho al clasificador, notar que la cantidad de puntos mal clasificados solo se reduce en 1. Esto en general no se cumple, ya que en muchos casos el uso de PCA permite mejorar el rendimiento del clasificador al eliminar ruido de los datos y reducir la \textit{maldición de la dimensión}.
 
-\subsection{PCA 1-D}
+Se presenta en las siguientes páginas los resultados obtenidos para diferentes cantidades de componentes utilizadas en PCA. Se detallan los resultados más importantes, los gráficos sobrantes se han anexado en el Apéndice A.
+
+\subsection{Resultados Detallados}
+\subsubsection{PCA+LDA 1-D}
   \begin{figure}[H]
   \centering
     \begin{minipage}{.5\textwidth}
@@ -503,7 +546,7 @@ La precisión para este caso es de 67.53\%, muy detrás de todos los otros casos
 
 \newpage
 
-\subsection{PCA 2-D}
+\subsubsection{PCA+LDA 2-D}
   \begin{figure}[H]
   \centering
     \begin{minipage}{.5\textwidth}
@@ -530,12 +573,9 @@ La posición actual del punto de intersección se ha desplazado hacia la izquier
 
 La precisión para este caso es de 73.16\%, si bien no es tan óptimo como otros casos ya empieza a ser competitivo con los clasificadores que utilizaron PCA con otras dimensiones. Se debe notar que agregar esta dimensión produce el aumento más grande sobre la precisión y después se puede observar que cada dimensión aporta menos. Esto se debe a que las dimensiones son agregadas en orden descendente respecto a la variabilidad que contienen.
 
-
-
 \newpage
 
-
-\subsection{PCA 7-D}
+\subsubsection{PCA+LDA 7-D}
   \begin{figure}[H]
   \centering
     \begin{minipage}{.5\textwidth}
@@ -552,39 +592,53 @@ La precisión para este caso es de 73.16\%, si bien no es tan óptimo como otros
         \centering
         \includegraphics[width=1\linewidth]{images/CP_D7}
         \captionof{figure}{Probabilidad condicional de clase para 7-D}
+        \label{figure:ProbabilidadCondicional7D}
     \end{minipage}
 \end{figure}
-Al utilizar siete dimensiones para PCA se observa que se obtiene la mejor clasificación con respecto a todas las otras dimensiones probadas. Ver Anexo 1, donde se encuentran las imágenes de los gráficos de las otras dimensiones probadas. La dimensión óptima se calculó utilizando un algoritmo que busca el clasificador que obtenga la mayor precisión de clasificación, de acuerdo a lo mostrado en la sección de implementación.
+Al utilizar siete dimensiones para PCA se observa que se obtiene la mejor clasificación con respecto a todas las otras dimensiones probadas (ver Anexo~\ref{appendix:GraficosRestantes}, donde se encuentran las imágenes de los gráficos de las otras dimensiones probadas). La dimensión óptima se calculó utilizando un algoritmo que busca el clasificador que obtenga la mayor precisión de clasificación, de acuerdo a lo mostrado en la sección de implementación.
 
-Se puede observar que las distribuciones se encuentran menos superpuestas con respecto a las otras dimensiones probadas. Desde la dimensión 5 la variabilidad no cambia demasiado, por lo que la ganancia obtenida con PCA no fue demasiada para este problema en particular.
+Se puede observar que las distribuciones se encuentran menos superpuestas con respecto a las otras dimensiones probadas.  Para este problema en particular la ganancia obtenida con PCA+LDA no fue demasiada, la dimensionalidad se redujo en uno respecto al valor original, y se logró clasificar un ejemplo más de manera correcta.
 
-La posición actual del punto de intersección se encuentra en -0.30
+\newpage
 
-La precisión para este caso es de 77.92\%,
+La posición actual del punto de intersección se encuentra en LDA igual a -0.30, para este valor no se puede decir si el paciente padece diabetes o no. Nótese que los valores LDA se pueden utilizar para crear un criterio discriminante, entonces se pueda dividir el gráfico que se muestra en la Figura~\ref{figure:ProbabilidadCondicional7D} en los siguientes intervalos:
+
+\begin{itemize}
+    \item Si LDA se encuentra entre $(-\infty;-0.4)$ existe una mayor probabilidad que el paciente padezca diabetes.
+    \item Si LDA se encuentra cercano al punto de intersección, es decir el intervalo $(-0.4;-0.2)$, no se puede determinar con certeza si el paciente padece diabetes o no.
+    \item Si LDA se encuentra entre $(-0.2; \infty)$ existe una menor probabilidad que el paciente padezca diabetes o por otro lado que no padezca diabetes.
+\end{itemize}
+
+Se ha definido que la región de incertidumbre se encontrará a 0.1  desde el punto de intersección en ambas direcciones. El valor 0.1 ha sido seleccionado observando las curvas empíricas de probabilidad condicional (notar que se ha agregado una grilla en este gráfico para facilitar la lectura) y no se debe tomar como un valor exacto, aunque provee una estimación educada para la región de incertidumbre.
+
+La precisión de clasificación sobre los datos de prueba si un paciente padece diabetes o no es de un 77.92\%. Se determinó que este es el valor óptimo de rendimiento para el clasificador mediante este enfoque, cabe mencionar que utilizando otro enfoque más complejo se podría obtener una precisión más alta. Aunque en comparación a los clasificadores encontrados en la bibliografía para estos datos en particular la precisión alcanzada es similar.
+
 
 \newpage
 
 %-----------------------------------------------------------------------------------
-% SECTION 5
+%	SECTION 5
 %----------------------------------------------------------------------------------------
 \newpage
 \section{Conclusiones}
-Se ha completado satisfactoriamente el objetivo del taller II que correspondía a construir un diagnosticador de diabetes utilizando PCA, LDA y un clasificador Gaussiano basado en Naïve Bayes. Este trabajo ha contribuido en mejorar el entendimiento de las técnicas de predicciones aprendidas en clases mediante su uso e implementación. Además, ha permitido profundizar el conocimiento adquirido en cátedra, ya que el desarrollo del taller ha requerido de una extensa recopilación bibliográfica del tema además de estudiar las posibles implementaciones del clasificador bayesiano.
+Se ha completado satisfactoriamente el objetivo del taller II que correspondía a construir un diagnosticador de diabetes utilizando PCA, LDA y un clasificador Gaussiano basado en Naïve Bayes. Este trabajo ha contribuido en mejorar el entendimiento de las técnicas de clasificación aprendidas en clases mediante su uso e implementación. Además, ha permitido profundizar el conocimiento adquirido en cátedra, ya que el desarrollo del taller ha requerido de una extensa recopilación bibliográfica del tema además de estudiar las posibles implementaciones del clasificador bayesiano.
 
-Se ha mostrado además la clara diferencia que existe en la precisión entregada por el clasificador dependiendo de la cantidad de componentes que hayan sido usados con PCA, se ha comprobado empirícamente que la mejor precisión se obtiene con 7 dimensiones. Además se ha mencionado la diferencia que produce el salto desde 1 dimensión a 2 dimensiones para PCA sobre la precisión del método. Cabe destacar que después de agregar la 2da dimensión el rendimiento del clasificador crece lentamente, esto debido a que cada dimensión contiene cada vez menor variabilidad, produciéndose un efecto de rendimientos decrecientes a medida que se aumentaba la cantidad de dimensiones, después del óptimo la calidad del clasificador empezó a disminuir.
+Se ha mostrado además la clara diferencia que existe en la precisión entregada por el clasificador dependiendo de la cantidad de componentes que hayan sido usados con PCA, se ha comprobado empíricamente que la mejor precisión se obtiene con siete dimensiones. Además se ha visto que la mayor mejora de la precisión del método se produce en el salto desde una dimensión a dos dimensiones para PCA. Cabe destacar que después de agregar la segunda dimensión el rendimiento del clasificador crece más lentamente, esto debido a que cada dimensión contiene cada vez menor variabilidad y por lo tanto no aporta tanta información como las primeras dos. Es decir el crecimiento de precisión respecto a la cantidad de dimensiones sigue la ley de rendimientos decrecientes. Después del óptimo la calidad del clasificador empezó a disminuir a medida que se aumentaba la cantidad de dimensiones en PCA.
 
-Se debe mencionar que si para PCA se utiliza una única dimensión el rendimento del algoritmo es bajo respecto a los demás casos, esto debido a que si se hace una reducción solo sobre la primera componente principal se pierde mucha información contenida en otras dimensiones del problema.
+Se debe mencionar que si para PCA se utiliza una única dimensión el rendimiento del algoritmo es bajo respecto a los demás casos, esto debido a que si se hace una reducción solo sobre la primera componente principal se pierde mucha información contenida en otras dimensiones de los datos del problema. 
 
-Los datos utilizados para el desarrollo de este taller presentaron la particularidad que PCA no redujo mucho la cantidad de dimensiones, esto no ocurre en el caso general, donde el uso de PCA permite reducir en gran medida la dimensión de los datos al eliminar ruido e información redundante. En este caso la dimensión solo se redujo de 8 a 7, un cambio no muy significativo y que solo aportó en un ejemplo más clasificado correctamente. En otros casos el aporte de PCA puede ser significativo y permitir grandes mejoras del rendimiento, pues permite reducir la \textit{maldición de la dimensión}.
+Los datos utilizados para el desarrollo de este taller presentaron la particularidad que PCA no redujo mucho la cantidad de dimensiones, esto no ocurre en el caso general, donde el uso de PCA permite reducir en gran medida la dimensión de los datos al eliminar ruido e información redundante. En este caso la dimensión solo se redujo desde ocho a siete, un cambio no muy significativo y que solo aportó en una mejora de un ejemplo más clasificado correctamente. En otros casos el aporte de PCA puede ser significativo y permitir grandes mejoras del rendimiento, pues permite reducir la \textit{maldición de la dimensión} (como se pudo ver en el último control de lectura).
 
 Una propuesta interesante sería probar la implementación realizada con datos de otro problema de mayores dimensiones en función de observar si PCA produce un cambio significativo. También sería interesante generalizar el código implementado a problemas con más de dos clases, ya que la implementación actual del clasificador bayesiano propio solo admite problemas de clasificación binaria, a diferencia de la implementación de la librería \textit{scikit-learn} que admite problemas de clasificación $n$-arios.
 
-El uso de la librería \textit{scikit-learn} en el desarrollo del taller facilitó bastante la implementación, ya que esta contenía todos los métodos utilizados ya implementados. Lamentablemente la librería no se pudo hacer funcionar en Windows, por lo que para evitar problemas se realizó toda la implementación en un ambiente Linux.
+Sería interesante poder obtener cuáles son las dimensiones seleccionadas y cuáles son las dos primeras componentes principales, esto permitiría entregar una interpretación dentro del contexto del problema. Además, sería posible interpretar el criterio de clasificación en función de las variables definidas, sin embargo, las librerías de \textit{scikit-learn} no entregan una manera simple de obtener esta información, por lo tanto sería necesario diseñar e implementar los algoritmos PCA y LDA sólo para obtener estos datos, pero se ha considerado que esto está fuera del alcance del taller.
 
-Por último, queda por mencionar los problemas encontrados durante el desarrollo del taller, a decir, la implementación propia del clasificador bayesiano, esto debido a que la bibliografía referenciada contenía diferentes métodos para determinar la clase a que pertenecía una instancia de los datos. Si bien todos estos métodos son equivalentes, hubo problema con la implementación de las fórmulas debido a ciertas incongruencias encontradas en las fuentes, una vez se tuvo las fórmulas correctas el clasificador funcionó de manera idéntica al clasificador de la librería \textit{scikit-learn}.
+El uso de la librería \textit{scikit-learn} en el desarrollo del taller facilitó bastante la implementación, ya que esta contenía todos los métodos requeridos ya implementados, lo que permitió simplemente realizar los llamados para aplicarlos. Lamentablemente la librería no se pudo hacer funcionar en Windows, por lo que para evitar problemas se realizó toda la implementación en un ambiente Linux.
+
+Por último, queda por mencionar los problemas encontrados durante el desarrollo del taller, a decir, la implementación propia del clasificador bayesiano, esto debido a que la bibliografía referenciada contenía diferentes métodos para determinar la clase a la que pertenecía una instancia de los datos. Si bien todos estos métodos son equivalentes, hubo problema con la implementación de las fórmulas debido a ciertas incongruencias encontradas en las fuentes, una vez se tuvo las fórmulas correctas para el clasificador, este funcionó de manera idéntica al clasificador de la librería \textit{scikit-learn}, confirmandose así que la implementación realizada es correcta.
 
 %----------------------------------------------------------------------------------------
-% BIBLIOGRAPHY
+%	BIBLIOGRAPHY
 %----------------------------------------------------------------------------------------
 
 \newpage
@@ -594,7 +648,7 @@ Por último, queda por mencionar los problemas encontrados durante el desarrollo
 
 \begin{thebibliography}{10} % 10 the total number of references
     % Libro guía
-    \bibitem{1} S. Russell {\em Artificial Intelligence.} 2010: A Modern Approach.
+    \bibitem{1} S. Russell. (2010) {\em Artificial Intelligence: A Modern Approach}.
 
     \bibitem{2} Peña, D. (2002). {\em Análisis de datos multivariantes (Vol. 24)}. Madrid: McGraw-Hill.
 
@@ -615,6 +669,8 @@ Por último, queda por mencionar los problemas encontrados durante el desarrollo
     \bibitem{9} Bekios-Calfa, J., Buenaposada, J. M., \& Baumela, L. (2011). {\em Revisiting linear discriminant techniques in gender recognition}. Pattern Analysis and Machine Intelligence, IEEE Transactions on, 33(4), 858-864.
     
     \bibitem{10} Vincent Sigillito. (1990). {\em Pima Indians Diabetes Data Set}, The Johns Hopkins University. Recuperado Julio 19, 2014, desde https://archive.ics.uci.edu/ml/datasets/Pima+Indians+Diabetes
+    
+    \bibitem{11} Raj Anand, Vishnu Pratap Singh Kirar, Kavita Burs. (2012). {\em Data Pre-processing and Neural Network Algorithms for Diagnosis of Type II Diabetes: A Survey} International Journal of Engineering and Advanced Technology (IJEAT).
 \end{thebibliography}
 
 \newpage
@@ -622,7 +678,7 @@ Por último, queda por mencionar los problemas encontrados durante el desarrollo
   \renewcommand\thetable{\thesection\arabic{table}}
   \renewcommand\thefigure{\thesection\arabic{figure}}
 
-  \section{Gráficos Restantes} 
+  \section{Gráficos Restantes} \label{appendix:GraficosRestantes}
 
   \begin{figure}[H]
   \centering

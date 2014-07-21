@@ -93,6 +93,7 @@ class Graph:
         pylab.xlabel('$LDA$')
         pylab.ylabel('$P(DIABETES|LDA)$')
         pylab.legend()
+        pylab.grid()
     
     def show_graphs(self):
         """Despliega los graficos
